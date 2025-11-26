@@ -31,8 +31,7 @@ import best4 from '../assets/best4.jpg';
 import "./Home.css";
 import { GrSquare } from "react-icons/gr";
 import Card from "./Card";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { FaMoneyCheck, FaPlane } from "react-icons/fa";
+import Footer from './Footer';
 
 export default function Home() {
   const carouselOptions = {
@@ -53,7 +52,7 @@ const sliderImages = [banner, capwomen, mens];
       {/* Banner Section */}
       <div className="row m-0 p-0">
         <div className="image-container p-0">
-          <img src={banner} alt="banner" className="banner-img" />
+          <img src={banner} alt="banner" className="banner-img img-fluid p-0" />
 
           <div className="banner-text fw-bold">
             <p>new inspiration 2024</p>
@@ -72,11 +71,11 @@ const sliderImages = [banner, capwomen, mens];
         </div>
       </div>
 
-      {/* 3 Image Grid Section */}
+      {/* 3 Image Section */}
       <div className="container">
         <div className="row my-5 g-3">
           <div className="col-md-4 col-12">
-            <img src={capwomen} alt="" className="img-fluid w-100 rounded" />
+            <img src={capwomen} alt="" className="img-fluid w-100 rounded " />
           </div>
           <div className="col-md-4 col-12">
             <img src={blur} alt="" className="img-fluid w-100 rounded" />
@@ -137,6 +136,7 @@ const sliderImages = [banner, capwomen, mens];
 
         </div>
       </div>
+      {/* 4 cards section */}
       <div className="container">
         <div className="row my-5">
           <div className="col-sm-4">
@@ -162,6 +162,7 @@ const sliderImages = [banner, capwomen, mens];
 
         </div>
       </div>
+      {/* trending section */}
       <div className="container bg-light py-2 my-5 text-center">
 <h5><GrSquare /> Trending Products</h5>
       </div>
@@ -186,6 +187,7 @@ const sliderImages = [banner, capwomen, mens];
 
         </div>
         </div>
+        {/* best seller section */}
         <div className="container bg-light py-2 my-5 text-center">
 <h5><GrSquare /> Best Sellers</h5>
       </div>
@@ -210,61 +212,51 @@ const sliderImages = [banner, capwomen, mens];
 
         </div>
         </div>
-       <div className="row mt-5" style={{backgroundColor:'#F5F5F5'}}>
-  <div className="col-sm-10 mx-auto">
-    <div className="row text-center">
-
-      <div className="col-lg-3 col-md-6 col-sm-6 my-5">
-        <div className="box ">
-<i class="fa-solid fa-plane icon"></i>       
-        </div>
-        <h6 className="my-2">FREE SHIPPING WORLD WIDE</h6>
-      </div>
-
-      <div className="col-lg-3 col-md-6 col-sm-6">
-        <div className="box mt-5">
-<i class="fa-solid fa-money-check icon"></i> </div>
-        <h6 className="my-2">100% MONEY BACK GUARANTEE</h6>
-      </div>
-
-      <div className="col-lg-3 col-md-6 col-sm-6">
-        <div className="box mt-5">
-<i class="fa-solid fa-credit-card icon"></i>        </div>
-        <h6 className="my-2">MONEY PAYMENT GATEWAYS</h6>
-      </div>
-
-      <div className="col-lg-3 col-md-6 col-sm-6">
-        <div className="box mt-5">
-<i class="fa-solid fa-headset icon"></i>        </div>
-        <h6 className="my-2">24/7 HOURS SUPPORT</h6>
-      </div>
-
-    </div>
-  </div>
-</div>
-<Splide
-  options={{
-    type: 'loop',
-    perPage: 1,
-    autoplay: true,
-    interval: 3000,
-    pauseOnHover: true,
-    arrows: false,
-    pagination: true,
-  }}
+        {/* services section  */}
+   <Footer/>
+{/* carousel */}
+<div 
+  className="static-slider-bg" 
+  style={{ backgroundImage: `url(${banner})` }}
 >
-  {sliderImages.map((img, index) => (
-    <SplideSlide key={index}>
-      <div className="slider-bg" style={{ backgroundImage: `url(${img})` }}>
+  <Splide
+    options={{
+      type: 'loop',
+      perPage: 1,
+      autoplay: true,
+      interval: 3000,
+      pauseOnHover: false,
+      arrows: false,
+      pagination: true,
+    }}
+  >
+    {[
+      {
+        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse...",
+        name: "Jason Statham",
+        role: "Founder at Brand"
+      },
+      {
+        text: "Donec gravida urna ac risus aliquet convallis. Nam pretium urna...",
+        name: "Angelina Jolie",
+        role: "CEO at FashionPro"
+      },
+      {
+        text: "Integer dignissim metus sed nibh dictum, eget fringilla eros feugiat.",
+        name: "Chris Evans",
+        role: "Marketing Head"
+      }
+    ].map((item, idx) => (
+      <SplideSlide key={idx}>
         <div className="slider-text">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse...</p>
-          <h4>Jason Statham</h4>
-          <span>Founder at Brand</span>
+          <p>{item.text}</p>
+          <h4>{item.name}</h4>
+          <span>{item.role}</span>
         </div>
-      </div>
-    </SplideSlide>
-  ))}
-</Splide>
+      </SplideSlide>
+    ))}
+  </Splide>
+</div>
 
 
 

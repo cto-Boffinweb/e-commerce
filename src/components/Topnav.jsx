@@ -11,7 +11,7 @@ export default function Topnav() {
       <div className="row">
         <div className="col-12 bg-black text-center py-2 topnavupper">
           <i><b>Enjoy an extra 20% off</b> select sales style</i> 
-          <Link to="/">Read More</Link>
+           <Link to="/">Read More</Link>
         </div>
       </div>
 
@@ -74,11 +74,14 @@ export default function Topnav() {
           <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             SHOP
           </a>
-          <ul className="dropdown-menu ">
-            <li><a className="dropdown-item" href="#">Action</a></li>
-            <li><a className="dropdown-item" href="#">Another action</a></li>
-            <li><hr className="dropdown-divider"/></li>
-            <li><a className="dropdown-item" href="#">Something else here</a></li>
+          <ul className="dropdown-menu" style={{height:'500px',width:'300px'}}>
+            <h5 className='mx-2'>COLLECTION LAYOUTS</h5>
+            <li><a className="dropdown-item" href="#">Collections Type 1</a></li>
+            <li><a className="dropdown-item" href="#">Collections Type 2</a></li>
+            <li><a className="dropdown-item" href="#">Collections Type 3</a></li>
+            <li><a className="dropdown-item" href="#">Collections Type 4</a></li>
+            <li><Link className="dropdown-item" to="/leftbar">left Sidebar</Link></li>
+
           </ul>
         </li>
        <li className="nav-item dropdown mx-2">
