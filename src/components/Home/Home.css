@@ -46,7 +46,7 @@ padding: 0;
   justify-content: center;
   align-items: center;
   position: relative;
-  background-image: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
 
 }
 
@@ -55,7 +55,6 @@ padding: 0;
   text-align: center;
   color: white;
   padding: 25px 30px;
-
 }
 
 .slider-text p {

@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import './Topnav.css'
-import logo from '../assets/logo.png'
+import logo from '../../assets/logo.png';
 import { FaBalanceScale, FaHeart, FaShoppingBag } from "react-icons/fa";
 import { IoSearch } from 'react-icons/io5';
 
-export default function Topnav() {
+export default function Topnav({ cartCount }) {
   return (
     <>
       {/* topnav upper */}
@@ -43,7 +43,7 @@ export default function Topnav() {
 <div className="col-sm-10 mx-auto">
     <div className="row " style={{fontFamily:'emoji'}}>
     <nav className="navbar navbar-expand-lg">
-  <div className="container-fluid">
+  <div className="container-fluid ">
     <a className="navbar-brand" href="#"><img src={logo}alt="" /></a>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
@@ -85,11 +85,11 @@ export default function Topnav() {
           </ul>
         </li>
        <li className="nav-item dropdown mx-2">
-          <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <Link className="nav-link dropdown-toggle" to="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             GALLERY
-          </a>
+          </Link>
           <ul className="dropdown-menu">
-            <li><a className="dropdown-item" href="#">Action</a></li>
+            <li><Link className="dropdown-item" to="/gallery">Gallery</Link></li>
             <li><a className="dropdown-item" href="#">Another action</a></li>
             <li><hr className="dropdown-divider"/></li>
             <li><a className="dropdown-item" href="#">Something else here</a></li>
@@ -144,11 +144,32 @@ export default function Topnav() {
      
     </div>
   </div>
-   <Link className='px-2'>
-     <IoSearch /> </Link>
- |<Link className='px-2'>LOGIN</Link> 
- | <Link className='px-2'> CART</Link> <FaShoppingBag/>
- 
+  <div className="d-flex  justify-content-center">
+  <Link className="mx-2"><IoSearch size={20} /></Link>
+  <Link className="mx-2">LOGIN</Link>
+  <Link to="/mycart" className="mx-2 position-relative">
+  <FaShoppingBag size={22} />
+
+  <span
+    style={{
+      position: "absolute",
+      top: "-6px",
+      right: "-8px",
+      background: "red",
+      color: "#fff",
+      fontSize: "10px",
+      padding: "1px 4px",
+      borderRadius: "50%"
+    }}
+  >
+    {cartCount}
+  </span>
+</Link>
+
+
+
+</div>
+
 </nav>
 
 </div>

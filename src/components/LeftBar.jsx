@@ -1,5 +1,5 @@
 import React from 'react'
-import Topnav from './Topnav'
+import Topnav from './Header/Topnav'
 import { Link } from 'react-router-dom'
 import { GrSquare } from 'react-icons/gr'
 import { RiDeleteBin6Line } from 'react-icons/ri'
@@ -18,7 +18,7 @@ import Footer from './Footer'
 export default function LeftBar() {
     return (
         <>
-            <Topnav />
+            {/* <Topnav /> */}
             <div className="row bg-light">
                 <div className="col-sm-10 mx-auto ">
                     <p className='my-2'><Link to='/'>Home</Link> / <Link>Women's</Link></p>
@@ -276,7 +276,6 @@ export default function LeftBar() {
                     </div>
                 </div>
             </div>
-            <Footer />
             <style>{`
         .color-box {
           width: 25px;

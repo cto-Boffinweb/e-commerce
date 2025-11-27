@@ -2,36 +2,34 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 
 
-import Topnav from "./Topnav";
-import banner from "../assets/main-banner2.jpg";
-import capwomen from "../assets/capwomen.jpg";
-import blur from "../assets/blur.jpg";
-import mens from "../assets/offer-men.jpg";
-import image1 from "../assets/img1.jpg";
-import image2 from "../assets/img2.jpg";
-import image3 from "../assets/img3.jpg";
-import image4 from "../assets/img4.jpg";
-import image5 from "../assets/img5.jpg";
-import image6 from "../assets/img6.jpg";
-import image7 from "../assets/img7.jpg";
-import image8 from "../assets/img8.jpg";
-import cat1 from '../assets/cate1.jpg';
-import cat2 from '../assets/cate2.jpg';
-import cat3 from '../assets/cate3.jpg';
-import cat4 from '../assets/cate4.jpg';
-import trend1 from '../assets/trending1.jpg';
-import trend2 from '../assets/trending2.jpg';
-import trend3 from '../assets/trending3.jpg';
-import trend4 from '../assets/trending4.jpg';
-import best1 from '../assets/best1.jpg';
-import best2 from '../assets/best2.jpg';
-import best3 from '../assets/best3.jpg';
-import best4 from '../assets/best4.jpg';
+import banner from "../../assets/main-banner2.jpg";
+import capwomen from "../../assets/capwomen.jpg";
+import blur from "../../assets/blur.jpg";
+import mens from "../../assets/offer-men.jpg";
+import image1 from "../../assets/img1.jpg";
+import image2 from "../../assets/img2.jpg";
+import image3 from "../../assets/img3.jpg";
+import image4 from "../../assets/img4.jpg";
+import image5 from "../../assets/img5.jpg";
+import image6 from "../../assets/img6.jpg";
+import image7 from "../../assets/img7.jpg";
+import image8 from "../../assets/img8.jpg";
+import cat1 from '../../assets/cate1.jpg';
+import cat2 from '../../assets/cate2.jpg';
+import cat3 from '../../assets/cate3.jpg';
+import cat4 from '../../assets/cate4.jpg';
+import trend1 from '../../assets/trending1.jpg';
+import trend2 from '../../assets/trending2.jpg';
+import trend3 from '../../assets/trending3.jpg';
+import trend4 from '../../assets/trending4.jpg';
+import best1 from '../../assets/best1.jpg';
+import best2 from '../../assets/best2.jpg';
+import best3 from '../../assets/best3.jpg';
+import best4 from '../../assets/best4.jpg';
 
 import "./Home.css";
 import { GrSquare } from "react-icons/gr";
-import Card from "./Card";
-import Footer from './Footer';
+import Card from "../Card";
 
 export default function Home() {
   const carouselOptions = {
@@ -47,7 +45,6 @@ const sliderImages = [banner, capwomen, mens];
 
   return (
     <>
-      <Topnav />
 
       {/* Banner Section */}
       <div className="row m-0 p-0">
@@ -75,13 +72,13 @@ const sliderImages = [banner, capwomen, mens];
       <div className="container">
         <div className="row my-5 g-3">
           <div className="col-md-4 col-12">
-            <img src={capwomen} alt="" className="img-fluid w-100 rounded " />
+            <img src={capwomen} alt="" className="img-fluid w-100  " />
           </div>
           <div className="col-md-4 col-12">
-            <img src={blur} alt="" className="img-fluid w-100 rounded" />
+            <img src={blur} alt="" className="img-fluid w-100 " />
           </div>
           <div className="col-md-4 col-12">
-            <img src={mens} alt="" className="img-fluid w-100 rounded" />
+            <img src={mens} alt="" className="img-fluid w-100 " />
           </div>
         </div>
       </div>
@@ -140,22 +137,22 @@ const sliderImages = [banner, capwomen, mens];
       <div className="container">
         <div className="row my-5">
           <div className="col-sm-4">
-            <img src={cat1} alt="" />
+            <img src={cat1} alt="" className='img-fluid'/>
           </div>
     <div className="col-sm-8">
   <div className="row g-4">
 
     <div className="col-6">
-      <img src={cat2} alt=""  />
+      <img src={cat2} alt=""  className='img-fluid' />
     </div>
 
     <div className="col-6">
-      <img src={cat3} />
+      <img src={cat3} className='img-fluid'/>
     </div>
 
   </div>
   <div className="row mt-4">
-      <img src={cat4} />
+      <img src={cat4} className='img-fluid'/>
   </div>
 </div>
 
@@ -213,7 +210,7 @@ const sliderImages = [banner, capwomen, mens];
         </div>
         </div>
         {/* services section  */}
-   <Footer/>
+   
 {/* carousel */}
 <div 
   className="static-slider-bg" 
