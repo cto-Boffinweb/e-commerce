@@ -71,9 +71,27 @@ const sliderImages = [banner, capwomen, mens];
       {/* 3 Image Section */}
       <div className="container">
         <div className="row my-5 g-3">
-          <div className="col-md-4 col-12">
-            <img src={capwomen} alt="" className="img-fluid w-100  " />
-          </div>
+                    <div className="col-md-4 col-12 category-box">
+
+  <img src={capwomen} className="cat-img img-fluid w-100 " />
+
+  <div className="glass-box-outer">
+    <div className="glass-inner">
+      <h6 className="cat-title">WOMEN'S</h6>
+
+      <ul className="cat-menu text-secondary">
+        <li>Woman Accessories</li>
+        <li>Man Accessories</li>
+        <li>Sunglasses</li>
+        <li>Belts</li>
+        <li>Hats</li>
+        <li>Scarfs</li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
           <div className="col-md-4 col-12">
             <img src={blur} alt="" className="img-fluid w-100 " />
           </div>

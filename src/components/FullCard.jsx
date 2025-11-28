@@ -169,7 +169,7 @@ export default function FullCard({ setCartCount }) {
 
                     </div>
                     <div className="row my-5 border-bottom">
-                        <div className="col-12 my-3 d-flex flex-wrap justify-content-start gap-3">
+                        <div className="col-12 my-3 d-flex flex-wrap justify-content-around ">
                             <span className="d-flex align-items-center">
                                 <FaSquare className="me-1" /> DESCRIPTION
                             </span>

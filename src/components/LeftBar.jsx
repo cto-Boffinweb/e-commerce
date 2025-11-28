@@ -40,10 +40,10 @@ export default function LeftBar() {
                                 <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
                                     <div className="accordion-body">
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">44 x</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary">Xl x</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Xl x</button>
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Clothing x</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Shoes x</button> <br />
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Accessories x</button><br />
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Shoes x</button> <br /><br />
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Accessories x</button><br /><br />
                                         <RiDeleteBin6Line /><u>Clear all</u>
                                     </div>
                                 </div>
@@ -56,13 +56,13 @@ export default function LeftBar() {
                                 </h2>
                                 <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
                                     <div className="accordion-body">
-                                        <ul style={{ listStyle: 'none' }}>
-                                            <li>Women’s</li>
-                                            <li>Men</li>
-                                            <li>Clothing</li>
-                                            <li>Shoes</li>
-                                            <li>Accessories</li>
-                                            <li>Uncategorized</li>
+                                        <ul style={{ listStyle: 'none',margin:'0',padding:'0'}}>
+                                            <li className='my-1'>Women’s</li>
+                                            <li className='my-1'>Men</li>
+                                            <li className='my-1'>Clothing</li>
+                                            <li className='my-1'>Shoes</li>
+                                            <li className='my-1'>Accessories</li>
+                                            <li className='my-1'>Uncategorized</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -75,13 +75,13 @@ export default function LeftBar() {
                                 </h2>
                                 <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                                     <div className="accordion-body">
-                                        <ul style={{ listStyle: 'none' }}>
-                                            <li>Addidas</li>
-                                            <li>Nike</li>
-                                            <li>Reebok</li>
-                                            <li>Shoes</li>
-                                            <li>Ralph lauren</li>
-                                            <li>Delpozo</li>
+                                        <ul style={{ listStyle: 'none',margin:'0',padding:'0' }}>
+                                            <li className='mt-1'>Addidas</li>
+                                            <li className='mt-1'>Nike</li>
+                                            <li className='mt-1'>Reebok</li>
+                                            <li className='mt-1'>Shoes</li>
+                                            <li className='mt-1'>Ralph lauren</li>
+                                            <li className='mt-1'>Delpozo</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -101,9 +101,9 @@ export default function LeftBar() {
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">36</button>
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Xs</button>
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">S</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">M</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">L</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Xl</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">M</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">L</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">Xl</button>
 
                                     </div>
                                 </div>
@@ -116,13 +116,13 @@ export default function LeftBar() {
                                 </h2>
                                 <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                                     <div className="accordion-body">
-                                        <ul style={{ listStyle: 'none' }}>
-                                            <li> $10 - $100</li>
-                                            <li>$100 - $200</li>
-                                            <li>$200 - $300</li>
-                                            <li>$300 - $400</li>
-                                            <li>$400 - $500</li>
-                                            <li>$500 - $600</li>
+                                        <ul className='list-unstyled'>
+                                            <li className='mt-1'> $10 - $100</li>
+                                            <li className='mt-1'>$100 - $200</li>
+                                            <li className='mt-1'>$200 - $300</li>
+                                            <li className='mt-1'>$300 - $400</li>
+                                            <li className='mt-1'>$400 - $500</li>
+                                            <li className='mt-1'>$500 - $600</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -134,7 +134,7 @@ export default function LeftBar() {
                                     </button>
                                 </h2>
                                 <div id="panelsStayOpen-collapseThree" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
-                                    <div className="accordion-body p-0 d-flex flex-wrap" >
+                                    <div className="accordion-body  d-flex flex-wrap " >
                                         <span className="color-box bg-dark m-1"></span>
                                         <span className="color-box bg-danger m-1"></span>
                                         <span className="color-box bg-primary m-1"></span>
@@ -155,9 +155,9 @@ export default function LeftBar() {
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Black</button>
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Discount</button>
                                         <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Good</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Jeans</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Summer</button>
-                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2">Winter</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">Jeans</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">Summer</button>
+                                        <button type="button" className="btn btn-sm btn-outline-secondary mx-2 my-2">Winter</button>
 
                                     </div>
                                 </div>

@@ -7,7 +7,7 @@ import Topnav from './components/Header/Topnav'
 import FullCard from './components/FullCard'
 import Footer from './components/Footer'
 import Gallery from './components/Gallery'
-import Mycart from './components/Header/Mycart'
+import Mycart from './components/Mycart'
 import Checkout from './components/Checkout'
 
 function App() {

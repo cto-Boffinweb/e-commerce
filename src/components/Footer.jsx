@@ -44,7 +44,7 @@ export default function Footer() {
   </div>
 </div>
 <div className="row my-4">
-    <div className="col-sm-10 mx-auto">
+    <div className="col-sm-10 mx-auto ">
         <div className="row" style={{fontSize:'14px',marginTop:'15px'}}>
     <div className="col-lg-3 col-sm-6 "style={{ paddingLeft: 0 }}>
         <img src={logo} alt="" />

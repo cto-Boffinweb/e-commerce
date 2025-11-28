@@ -22,3 +22,23 @@ a{
      text-decoration: none;
     color: inherit;
 }
+.nav-item:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+  animation: dropdownMove 0.3s ease-out;
+}
+
+@keyframes dropdownMove {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dropdown-menu {
+  display: none;
+}
