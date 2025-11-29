@@ -141,7 +141,7 @@ useEffect(() => {
             PAGES
           </Link>
           <ul className="dropdown-menu">
-            <li><a className="dropdown-item" href="#">Action</a></li>
+            <li><Link className="dropdown-item" to="/about">About Us</Link></li>
             <li><a className="dropdown-item" href="#">Another action</a></li>
             <li><hr className="dropdown-divider"/></li>
             <li><a className="dropdown-item" href="#">Something else here</a></li>
@@ -165,7 +165,7 @@ useEffect(() => {
   </div>
   <div className="d-flex  justify-content-center">
   <Link className="mx-2"><IoSearch size={20} /></Link>
-  <Link className="mx-2">LOGIN</Link>
+  <Link className="mx-2" to='/login'>LOGIN</Link>
   <Link to="/mycart" className="mx-2 position-relative">
   <FaShoppingBag size={22} />
 

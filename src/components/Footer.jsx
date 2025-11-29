@@ -59,7 +59,7 @@ export default function Footer() {
 <li>Contact Us</li>
         </ul>
     </div>
-    <div className="col-lg-3 col-sm-6 position-relative"style={{ paddingLeft: 0 }}>
+    <div className="col-lg-3 col-sm-6 position-relative "style={{ paddingLeft: 0 }}>
       <h6>INFORMATION</h6><hr style={{height:'2px', width:'50px',backgroundColor:'gray', position:'absolute',top:'10px'}}/>
     <ul className='mt-4' style={{listStyle:'none', padding: 0, margin: 0}}>
             <li>About Us</li>
@@ -68,7 +68,7 @@ export default function Footer() {
 <li>Contact Us</li>
         </ul>
     </div>
-    <div className="col-lg-3 col-sm-6 position-relative"style={{ paddingLeft: 0 }}>
+    <div className="col-lg-3 col-sm-6 position-relative "style={{ paddingLeft: 0 }}>
         <h6>CONTACT US</h6><hr style={{height:'2px', width:'50px',backgroundColor:'gray', position:'absolute',top:'10px'}}/>
         <ul className='mt-4' style={{listStyle:'none', padding: 0, margin: 0}}>
             <li><FaLocationDot/> Location: 2750 Quadra Street Victoria, Canada</li>
@@ -95,6 +95,32 @@ export default function Footer() {
         </div>
 </div>
     </div>
+    <style>
+      {`
+      .box{
+  height:80px;
+  width: 80px;
+  border: 1px solid white;
+  border-radius: 50%;
+ margin:0px auto;
+   display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon{
+  height: 65px;
+  width: 65px;
+  border-radius: 50%;
+padding: 0;
+  background-color: white;
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+      `}
+    </style>
     </div>
   )
 }

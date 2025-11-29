@@ -9,6 +9,8 @@ import Footer from './components/Footer'
 import Gallery from './components/Gallery'
 import Mycart from './components/Mycart'
 import Checkout from './components/Checkout'
+import Login from './components/Login'
+import About from './components/About'
 
 function App() {
 const [cartCount, setCartCount] = useState(0);
@@ -28,6 +30,8 @@ const [cartCount, setCartCount] = useState(0);
                 <Route path='/gallery' element={<Gallery/>}/>
                 <Route path='/mycart' element={<Mycart/>}/>
                 <Route path='/checkout' element={<Checkout/>}/>
+                <Route path='/login' element={<Login/>}/>
+                <Route path='/about' element={<About/>}/>
 
       </Routes>
       <Footer/>
