@@ -41,10 +41,10 @@ useEffect(() => {
             
             {/* LEFT LINKS */}
             <div className="col-lg-7 col-md-6 col-12 text-center text-md-start mb-2 mb-md-0">
-              <Link to="/about">About</Link> | 
-              <Link to="/stores"> Our Stores</Link> | 
-              <Link to="/faq"> FAQ's</Link> | 
-              <Link to="/contact"> Contact</Link>
+              <Link to="/about" className='mx-2'>About</Link> | 
+              <Link to="/stores" className='mx-2'> Our Stores</Link> | 
+              <Link to="/faq"className='mx-2'> FAQ's</Link> | 
+              <Link to="/contact"className='mx-2'> Contact</Link>
             </div>
 
             {/* RIGHT OPTIONS */}

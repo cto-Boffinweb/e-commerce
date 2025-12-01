@@ -11,6 +11,10 @@ import Mycart from './components/Mycart'
 import Checkout from './components/Checkout'
 import Login from './components/Login'
 import About from './components/About'
+import FAQ from './components/FAQ'
+import Privacy from './components/Privacy'
+import Return from './components/Return'
+import Register from './components/Register'
 
 function App() {
 const [cartCount, setCartCount] = useState(0);
@@ -32,6 +36,10 @@ const [cartCount, setCartCount] = useState(0);
                 <Route path='/checkout' element={<Checkout/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/about' element={<About/>}/>
+                <Route path='/faq' element={<FAQ/>}/>
+                <Route path='/privacy' element={<Privacy/>}/>
+                <Route path='/return' element={<Return/>}/>
+                <Route path='/register' element={<Register/>}/>
 
       </Routes>
       <Footer/>

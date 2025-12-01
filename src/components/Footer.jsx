@@ -8,6 +8,7 @@ import express from '../assets/expresscard.png'
 
 import { FaLocationDot, } from 'react-icons/fa6'
 import { FaEnvelope, FaFax, FaPhoneAlt } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 export default function Footer() {
   return (
     <div>
@@ -63,8 +64,11 @@ export default function Footer() {
       <h6>INFORMATION</h6><hr style={{height:'2px', width:'50px',backgroundColor:'gray', position:'absolute',top:'10px'}}/>
     <ul className='mt-4' style={{listStyle:'none', padding: 0, margin: 0}}>
             <li>About Us</li>
-<li>FAQ's</li>
-<li>Customer Services</li>
+<li><Link to='/privacy' onClick={() => window.scrollTo(0,0)}>Privacy Policy</Link></li>
+
+<li><Link to='/return' onClick={() => window.scrollTo(0,0)}>Return / Refund Policy</Link></li>
+
+
 <li>Contact Us</li>
         </ul>
     </div>

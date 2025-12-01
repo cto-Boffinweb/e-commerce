@@ -31,7 +31,7 @@ export default function Login() {
                         <h5 className='text-center py-3 bg-light'>New Customer</h5>
                         <h5 className='my-4'>create a account</h5>
                         <p style={{fontSize:'14px',color:'gray'}}>Sign up for a free account at our store. Registration is quick and easy. It allows you to be able to order from our shop. To start shopping click register.</p>
-                        <button className='btn btn-outline-dark rounded-0'>CREATE A ACCOUNT</button>
+                      <Link to='/register'><button className='btn btn-outline-dark rounded-0'>CREATE A ACCOUNT</button></Link>
 </div>
         </div>
     </div>

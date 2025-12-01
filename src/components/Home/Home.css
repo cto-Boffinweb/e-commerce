@@ -27,7 +27,7 @@
   height: 400px;
   background-size: cover;
   background-position: center;
-  background-attachment:unset;
+  /* background-attachment:unset; */
   display: flex;
   justify-content: center;
   align-items: center;
