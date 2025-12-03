@@ -15,7 +15,19 @@ import FAQ from './components/FAQ'
 import Privacy from './components/Privacy'
 import Return from './components/Return'
 import Register from './components/Register'
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import PlacedOrder from './components/PlacedOrder'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0) // scroll top on route change
+  }, [pathname])
+
+  return null
+}
 function App() {
 const [cartCount, setCartCount] = useState(0);
 
@@ -25,6 +37,7 @@ const [cartCount, setCartCount] = useState(0);
     <div className="container-fluid">
       
       <BrowserRouter>
+      <ScrollToTop/>
 <Topnav cartCount={cartCount} />
       <Routes>
         
@@ -40,6 +53,7 @@ const [cartCount, setCartCount] = useState(0);
                 <Route path='/privacy' element={<Privacy/>}/>
                 <Route path='/return' element={<Return/>}/>
                 <Route path='/register' element={<Register/>}/>
+                <Route path='/placedOrder' element={<PlacedOrder/>}/>
 
       </Routes>
       <Footer/>

@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {users} from '../components/Userdata'
-export default function Checkout() {
-  const [user, setUser] = useState(null);
-const [selectedAddress, setSelectedAddress] = useState(null);
+import {Users} from '../components/Userdata'
+import { useNavigate } from "react-router-dom";
 
-  useEffect(() => {
+export default function Checkout() {
+  const [paymentMethod, setPaymentMethod] = useState(""); 
+const navigate = useNavigate(); 
+
+const [selectedAddress, setSelectedAddress] = useState(null);
+  const [user, setUser] = useState(null); 
+
+ useEffect(() => {
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
   if (loggedInUser) {
-    setUser(loggedInUser);
-    setSelectedAddress(loggedInUser.addresses?.[0] || null);
+    // Match user from full Users array
+    const matched = Users.find(u => u.email === loggedInUser.email);
+
+    console.log("Matched User:", matched);  
+
+    if (matched) {
+      setUser(matched);  
+    }
   }
 }, []);
 
 
-  // Map ke liye form fields ka array
+
+
   const billingFields = [
     { label: "First Name", name: "firstName", type: "text" },
     { label: "Last Name", name: "lastName", type: "text" },
@@ -60,35 +73,59 @@ const [selectedAddress, setSelectedAddress] = useState(null);
       </div>
 
       {/* ADDRESS RADIO LIST */}
-      <div className="p-3 border rounded" style={{ fontSize: "14px" }}>
-        <h5 className="mb-3">Select Delivery Address</h5>
+     {/* ADDRESS RADIO LIST */}
+<div className="p-3 border rounded" style={{ fontSize: "14px" }}>
+  <h5 className="mb-3">Select Delivery Address</h5>
 
-       {user.addresses?.map((addr, i) => (
-  <div
-    key={i}
-    className={`form-check p-2 mb-2 rounded border 
-    ${selectedAddress?.label === addr.label ? "border-dark bg-light" : "border-secondary"}`}
-    style={{ cursor: "pointer" }}
-    onClick={() => setSelectedAddress(addr)}
-  >
-    <input
-      type="radio"
-      name="address"
-      className="form-check-input mt-1"
-      checked={selectedAddress?.label === addr.label}
-      onChange={() => setSelectedAddress(addr)}
-    />
+  {user?.addresses?.map((addr, index) => (
+    <div 
+      key={index} 
+      className="border p-3 mb-3 rounded"
+      style={{
+        background: selectedAddress === index ? "#f5f5f5" : "white",
+        cursor: "pointer"
+      }}
+onClick={() => {
+  setSelectedAddress(index);
+  localStorage.setItem(
+    "selectedAddress",
+    JSON.stringify(user.addresses[index])
+  );
+}}
 
-    <label className="form-check-label ms-2">
-      <b>{addr.label}:</b>  
-      {addr.address}, {addr.city}, {addr.state} {addr.postcode}, {addr.country}
-    </label>
-  </div>
-))}
+onChange={() => {
+  setSelectedAddress(index);
+  localStorage.setItem(
+    "selectedAddress",
+    JSON.stringify(user.addresses[index])
+  );
+}}
+    >
+      <div className="d-flex align-items-start">
+        
+        {/* RADIO BUTTON */}
+        <input
+          type="radio"
+          name="address"
+          checked={selectedAddress === index}
+          onChange={() => setSelectedAddress(index)}
+          style={{ marginTop: "4px", marginRight: "10px" }}
+        />
 
-
-        <button className="btn btn-dark btn-sm mt-3">+ Add New Address</button>
+        {/* ADDRESS DETAILS */}
+        <div>
+          <h6 className="m-0">{addr.label}</h6>
+          <p className="m-0">{addr.address}, {addr.city}</p>
+          <p className="m-0">{addr.state} - {addr.postcode}</p>
+          <p className="m-0">{addr.country}</p>
+        </div>
       </div>
+    </div>
+  ))}
+
+  <button className="btn btn-dark btn-sm mt-3">+ Add New Address</button>
+</div>
+
     </div>
   ) : (
     /* SHOW BILLING FORM IF NOT LOGGED IN */
@@ -170,7 +207,15 @@ const [selectedAddress, setSelectedAddress] = useState(null);
                 <h5>Payment Methods</h5>
 
                 <div className="form-check mt-2">
-                  <input type="radio" name="payment" className="form-check-input" id="bank" />
+<input 
+  type="radio" 
+  name="payment" 
+  className="form-check-input" 
+  id="bank"
+  value="bank"
+  checked={paymentMethod === "bank"} 
+  onChange={(e) => setPaymentMethod(e.target.value)}
+/>
                   <label htmlFor="bank" className="form-check-label"><b>Direct Bank Transfer</b></label>
                 </div>
                 <p className="text-muted ps-4">
@@ -180,17 +225,40 @@ const [selectedAddress, setSelectedAddress] = useState(null);
                 </p>
 
                 <div className="form-check">
-                  <input type="radio" name="payment" className="form-check-input" id="paypal" />
-                  <label htmlFor="online" className="form-check-label"><b>Online Payment</b></label>
+<input 
+  type="radio" 
+  name="payment" 
+  className="form-check-input" 
+  id="online"
+  value="online"
+  checked={paymentMethod === "online"}
+  onChange={(e) => setPaymentMethod(e.target.value)}
+/>                  <label htmlFor="online" className="form-check-label"><b>Online Payment</b></label>
                 </div>
 
                 <div className="form-check mt-2">
-                  <input type="radio" name="payment" className="form-check-input" id="cod" />
+<input 
+  type="radio" 
+  name="payment" 
+  className="form-check-input" 
+  id="cod"
+  value="cod"
+  checked={paymentMethod === "cod"}
+  onChange={(e) => setPaymentMethod(e.target.value)}
+/>
                   <label htmlFor="cod" className="form-check-label"><b>Cash on Delivery</b></label>
                 </div>
               </div>
 
-              <button className="btn btn-dark w-100 mt-3">Place Order</button>
+<button
+  className="btn btn-dark w-100 mt-3"
+  onClick={() => {
+    const isConfirmed = paymentMethod !== ""; // true if payment selected
+    navigate("/placedOrder", { state: { isConfirmed } });
+  }}
+>
+  Place Order
+</button>
             </div>
           </div>
         </div>

@@ -361,56 +361,6 @@ const sliderImages = [banner, capwomen, mens];
         </div>
         {/* services section  */}
    
-{/* carousel */}
-<div 
-  className="static-slider-bg" 
-  style={{ backgroundImage: `url(${banner})` }}
->
-  <Splide
-    options={{
-      type: 'loop',
-      perPage: 1,
-      autoplay: true,
-      interval: 3000,
-      pauseOnHover: false,
-      arrows: false,
-      pagination: true,
-    }}
-  >
-    {[
-      {
-        img:client1,
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse...",
-        name: "Jason Statham",
-        role: "Founder at Brand"
-      },
-      {
-                img:client1,
-
-        text: "Donec gravida urna ac risus aliquet convallis. Nam pretium urna...",
-        name: "Angelina Jolie",
-        role: "CEO at FashionPro"
-      },
-      {
-                img:client1,
-
-        text: "Integer dignissim metus sed nibh dictum, eget fringilla eros feugiat.",
-        name: "Chris Evans",
-        role: "Marketing Head"
-      }
-    ].map((item, idx) => (
-      <SplideSlide key={idx}>
-        <div className="slider-text">
-                    <img src={item.img} className='slider-img' style={{height:'80px',width:'80px',borderRadius:'50%'}}/>
-
-          <p>{item.text}</p>
-          <h4>{item.name}</h4>
-          <span>{item.role}</span>
-        </div>
-      </SplideSlide>
-    ))}
-  </Splide>
-</div>
 
 
 

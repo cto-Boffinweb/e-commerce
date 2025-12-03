@@ -7,20 +7,39 @@ import { useEffect, useState } from "react";
 
 
 export default function Topnav({ cartCount }) {
- const [showFixed, setShowFixed] = useState(false);
+ const [userState, setUserState] = useState(
+  JSON.parse(localStorage.getItem("loggedInUser"))
+);
 
+const [selectedAddress, setSelectedAddress] = useState(
+  JSON.parse(localStorage.getItem("selectedAddress"))
+);
+
+
+ const [showFixed, setShowFixed] = useState(false);
 useEffect(() => {
-  const handleScroll = () => {
-    if (window.scrollY > 80) {
-      setShowFixed(true);
-    } else {
-      setShowFixed(false);
-    }
+  const storedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (storedUser) {
+    setUserState(storedUser);
+    setSelectedAddress(JSON.parse(localStorage.getItem("selectedAddress")));
+  }
+}, []);
+useEffect(() => {
+  const handleUserUpdate = () => {
+    setUserState(JSON.parse(localStorage.getItem("loggedInUser")));
+    setSelectedAddress(JSON.parse(localStorage.getItem("selectedAddress")));
   };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
+  window.addEventListener("userLoggedIn", handleUserUpdate);
+
+  return () => {
+    window.removeEventListener("userLoggedIn", handleUserUpdate);
+  };
 }, []);
+
+
+
+
 
 
 
@@ -165,7 +184,51 @@ useEffect(() => {
   </div>
   <div className="d-flex  justify-content-center">
   <Link className="mx-2"><IoSearch size={20} /></Link>
-  <Link className="mx-2" to='/login'>LOGIN</Link>
+{userState ? (
+  <div className="dropdown mx-2">
+    <span
+      className="dropdown-toggle"
+      style={{ cursor: "pointer", fontWeight: "bold" }}
+      id="userDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      👤 {userState.firstName}
+    </span>
+    <ul className="dropdown-menu" aria-labelledby="userDropdown">
+      <li><Link className="dropdown-item" to="/profile">My Profile</Link></li>
+      <li><Link className="dropdown-item" to="/myorders">My Orders</Link></li>
+      <li>
+        <Link className="dropdown-item" to="/selected-address">
+          {selectedAddress
+            ? `${selectedAddress.address}, ${selectedAddress.city}, ${selectedAddress.state} - ${selectedAddress.postcode}`
+            : "No Address Selected"}
+        </Link>
+      </li>
+      <li><Link className="dropdown-item" to="/wishlist">Wishlist</Link></li>
+      <li><hr className="dropdown-divider"/></li>
+      <li>
+  <Link
+    className="dropdown-item"
+    to="/"
+    onClick={() => {
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("selectedAddress");
+      Cookies.remove("authToken");
+      setUserState(null);
+    }}
+  >
+    Logout
+  </Link>
+</li>
+
+    </ul>
+  </div>
+) : (
+  <Link className="mx-2" to="/login">LOGIN</Link>
+)}
+
+
   <Link to="/mycart" className="mx-2 position-relative">
   <FaShoppingBag size={22} />
 

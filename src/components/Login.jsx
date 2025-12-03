@@ -1,24 +1,66 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { users } from "./Userdata";
+import { Users } from "../components/Userdata.jsx";
+import Cookies from "js-cookie";
 
 export default function Login() {
+ 
+const [userState, setUserState] = useState(
+  JSON.parse(localStorage.getItem("loggedInUser"))
+);
+
+const [selectedAddress, setSelectedAddress] = useState(
+  JSON.parse(localStorage.getItem("selectedAddress"))
+);
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const user = users.find(u => u.email === email && u.password === password);
+ const handleLogin = (e) => {
+  e.preventDefault(); // ✅ always at the top
 
-    if (user) {
-      localStorage.setItem("loggedInUser", JSON.stringify(user));
-      navigate("/checkout"); // redirect to checkout after login
-    } else {
-      setError("Invalid email or password");
-    }
-  };
+  // 1. Check if user exists
+  const foundUser = Users.find(
+    (u) => u.email === email && u.password === password
+  );
+
+  if (foundUser) {
+    // 2. Save user to localStorage
+    localStorage.setItem("loggedInUser", JSON.stringify(foundUser));
+
+    // 3. CREATE TOKEN AFTER USER FOUND
+    const now = new Date();
+    const formatTime = (t) => t.toTimeString().split(" ")[0];
+    const startTime = formatTime(now);
+    const expiryTime = formatTime(new Date(now.getTime() + 60 * 60 * 1000)); // +1 hour
+    const tokenId = Math.random().toString(36).substring(2, 10);
+
+    const tokenData = {
+      auth: true,
+      username:"aman@gmail.com",
+      tokenId: tokenId,
+      start: startTime,
+      expiry: expiryTime,
+    };
+
+    
+    Cookies.set("authToken", JSON.stringify(tokenData), { expires: 1 });
+console.log("Cookie value:", Cookies.get("authToken"));
+
+    
+    window.dispatchEvent(new Event("userLoggedIn"));
+
+    
+    alert("Login Successful");
+    navigate("/checkout");
+  } else {
+setError("Invalid email or password");
+  }
+};
+
+
 
   return (
     <div>
@@ -47,7 +89,7 @@ export default function Login() {
               <div className="form-group my-4" style={{ fontSize: "14px" }}>
                 <label>PASSWORD</label>
                 <input
-                  type="text"
+                  type="password"
                   placeholder="Enter Your Password"
                   className="form-control bg-light my-2 login-form"
                   value={password}
