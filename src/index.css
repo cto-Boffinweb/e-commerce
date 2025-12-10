@@ -1,0 +1,18 @@
+/* src/index.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar collapse/expand using Bootstrap classes */
+.sidebar-expanded {
+  width: 220px;
+  transition: width 0.3s;
+}
+.sidebar-collapsed {
+  width: 60px;
+  transition: width 0.3s;
+}
+.nav-link:hover {
+  text-decoration: underline;
+}
