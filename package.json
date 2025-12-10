@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "dashboard",
+=======
+  "name": "client",
+>>>>>>> ce69b23fb6941aaaeae47edd283ae9854ec4e79a
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@ckeditor/ckeditor5-basic-styles": "^47.3.0",
     "@ckeditor/ckeditor5-build-classic": "^39.0.2",
     "@ckeditor/ckeditor5-react": "^11.0.0",
@@ -20,6 +25,17 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.2"
+=======
+    "@splidejs/react-splide": "^0.7.12",
+    "aos": "^2.3.4",
+    "js-cookie": "^3.0.5",
+    "owl.carousel": "^2.3.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-owl-carousel": "^2.3.3",
+    "react-owl-carousel2": "^0.3.0",
+    "react-router-dom": "^7.9.6"
+>>>>>>> ce69b23fb6941aaaeae47edd283ae9854ec4e79a
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
