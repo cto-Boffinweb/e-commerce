@@ -142,13 +142,13 @@ const Layout = () => {
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/websitesetting/seo">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/trendingsetting">
                     ➤ Top Trending
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/websitesetting/other">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/popularsetting">
                     ➤ Popular Item
                   </Link>
                 </li>
