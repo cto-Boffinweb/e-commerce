@@ -90,7 +90,7 @@ const Layout = () => {
             {openProductMenu && !collapsed && (
               <ul className="list-unstyled ms-4 mt-1">
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/product">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/addproduct">
                     ➤ Add Product
                   </Link>
                 </li>

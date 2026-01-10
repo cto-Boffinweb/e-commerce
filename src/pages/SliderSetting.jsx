@@ -1,137 +1,263 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function SliderSetting() {
-  const [banners, setBanners] = useState([
-    {
-      id: 1,
-      image: "",
-      subtitle: "",
-      title: "",
-      description: "",
-      buttons: []
-    }
-  ]);
+  const [sliders, setSliders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uniqueKeyCounter, setUniqueKeyCounter] = useState(0);
+
 
   useEffect(() => {
-    localStorage.setItem("banners", JSON.stringify(banners));
-  }, [banners]);
+    fetchSliders();
+  }, []);
 
-  const saveBanners = () => {
-    alert("Slider data saved successfully");
-    window.dispatchEvent(new Event("bannersUpdated"));
+  const fetchSliders = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/sliders");
+      setSliders(res.data);
+            console.log(res.data);
+
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handleChange = (index, field, value) => {
-    const updated = [...banners];
+  const handleFileChange = (index, field, file) => {
+    const updated = [...sliders];
+    updated[index][field] = file;
+    setSliders(updated);
+  };
+
+  const handleInputChange = (index, field, value) => {
+    const updated = [...sliders];
     updated[index][field] = value;
-    setBanners(updated);
+    setSliders(updated);
   };
 
-  const handleButtonChange = (bIndex, btnIndex, field, value) => {
-    const updated = [...banners];
-    updated[bIndex].buttons[btnIndex][field] = value;
-    setBanners(updated);
+  const handleSave = async (slider, index) => {
+    const formData = new FormData();
+    formData.append("title", slider.title);
+    formData.append("heading", slider.heading);
+    formData.append("description", slider.description);
+    formData.append("btn_1", slider.btn_1);
+    formData.append("url_1", slider.url_1);
+    formData.append("status", slider.status);
+
+    if (slider.slide instanceof File) formData.append("slide", slider.slide);
+    if (slider.thumbnail instanceof File) formData.append("thumbnail", slider.thumbnail);
+
+    try {
+      if (slider.id) {
+        // Update existing slider
+        await axios.put(`http://localhost:5000/api/sliders/${slider.id}`, formData);
+        alert("Slider updated successfully");
+      } else {
+        // Create new slider
+        await axios.post("http://localhost:5000/api/sliders", formData);
+        alert("Slider added successfully");
+      }
+      fetchSliders();
+    } catch (err) {
+      console.log(err);
+      alert("Error saving slider");
+    }
   };
 
-  const addButton = (index) => {
-    const updated = [...banners];
-    updated[index].buttons.push({ text: "New Button", link: "/" });
-    setBanners(updated);
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this slider?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/sliders/${id}`);
+      fetchSliders();
+    } catch (err) {
+      console.log(err);
+      alert("Error deleting slider");
+    }
   };
 
-  const removeButton = (bIndex, btnIndex) => {
-    const updated = [...banners];
-    updated[bIndex].buttons.splice(btnIndex, 1);
-    setBanners(updated);
-  };
+ const addNewSlider = () => {
+  const newKey = uniqueKeyCounter + 1;
+  setUniqueKeyCounter(newKey);
 
-  return (
-    <div className="container py-4">
-      <h3 className="mb-4 text-center">Slider Settings (Admin)</h3>
+  setSliders([
+    ...sliders,
+    {
+      tempId: Date.now(),   // ✅ frontend unique key
+      title: "",
+      heading: "",
+      description: "",
+      btn_1: "",
+      url_1: "",
+      status: "active",
+    },
+  ]);
+};
 
-      {banners.map((banner, index) => (
-        <div key={banner.id} className="card shadow-sm mb-4">
-          <div className="card-body">
-            <h5 className="card-title mb-3">Banner {index + 1}</h5>
 
-            <div className="mb-3">
-              <label className="form-label">Image Path</label>
-              <input
-                className="form-control"
-                placeholder="/banner1.jpg"
-                value={banner.image}
-                onChange={(e) => handleChange(index, "image", e.target.value)}
-              />
-            </div>
+  if (loading) return <p>Loading sliders...</p>;
 
-            <div className="row mb-3">
-              <div className="col-md-6">
-                <label className="form-label">Subtitle</label>
-                <input
-                  className="form-control"
-                  value={banner.subtitle}
-                  onChange={(e) => handleChange(index, "subtitle", e.target.value)}
-                />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Title</label>
-                <input
-                  className="form-control"
-                  value={banner.title}
-                  onChange={(e) => handleChange(index, "title", e.target.value)}
-                />
-              </div>
-            </div>
+ return (
+  <div className="container py-5">
+    {/* Header */}
+    <div className="d-flex justify-content-between align-items-center mb-3">
+      <h4 className="fw-bold">Slider Settings</h4>
+      <button className="btn btn-primary btn-sm" onClick={addNewSlider}>
+        + Add Slider
+      </button>
+    </div>
 
-            <div className="mb-3">
-              <label className="form-label">Description</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={banner.description}
-                onChange={(e) => handleChange(index, "description", e.target.value)}
-              />
-            </div>
+    <div className="card shadow-sm border-0">
+      <div className="table-responsive">
+        <table className="table table-bordered align-middle mb-0">
+          <thead className="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Heading</th>
+              <th>Description</th>
+              <th>Button Text</th>
+              <th>Button URL</th>
+              <th>Image</th>
+              <th className="text-center">Action</th>
+            </tr>
+          </thead>
 
-            <h6 className="mt-3">Buttons</h6>
-            {banner.buttons?.map((btn, btnIndex) => (
-              <div key={btnIndex} className="d-flex gap-2 mb-2 align-items-center">
-                <input
-                  className="form-control"
-                  placeholder="Button Text"
-                  value={btn.text}
-                  onChange={(e) => handleButtonChange(index, btnIndex, "text", e.target.value)}
-                />
-                <input
-                  className="form-control"
-                  placeholder="Button Link"
-                  value={btn.link}
-                  onChange={(e) => handleButtonChange(index, btnIndex, "link", e.target.value)}
-                />
-                <button
-                  className="btn btn-outline-danger"
-                  onClick={() => removeButton(index, btnIndex)}
-                >
-                  ✕
-                </button>
-              </div>
+          <tbody>
+            {sliders.map((slider, index) => (
+              <tr key={slider.id ?? slider.tempId}>
+                <td>
+                  <input
+                    className="form-control form-control-sm"
+                    value={slider.title || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "title", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    className="form-control form-control-sm"
+                    value={slider.heading || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "heading", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <textarea
+                    rows="2"
+                    className="form-control form-control-sm"
+                    value={slider.description || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "description", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    className="form-control form-control-sm"
+                    value={slider.btn_1 || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "btn_1", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td>
+                  <input
+                    className="form-control form-control-sm"
+                    value={slider.url_1 || ""}
+                    onChange={(e) =>
+                      handleInputChange(index, "url_1", e.target.value)
+                    }
+                  />
+                </td>
+
+                <td className="text-center">
+                  <input
+                    type="file"
+                    className="form-control form-control-sm mb-1"
+                    onChange={(e) =>
+                      handleFileChange(index, "slide", e.target.files[0])
+                    }
+                  />
+
+                  {slider.slide && (
+                    <img
+                      src={`http://localhost:5000/uploads/sliders/${slider.slide}`}
+                      alt=""
+                      style={{
+                        width: "70px",
+                        height: "40px",
+                        objectFit: "cover",
+                      }}
+                      className="border rounded"
+                      onError={(e) => (e.target.style.display = "none")}
+                    />
+                  )}
+                </td>
+
+                <td className="text-center">
+                  <div className="d-flex flex-column gap-1">
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => handleSave(slider, index)}
+                    >
+                      Save
+                    </button>
+
+                   <button
+  className="btn btn-danger btn-sm"
+  onClick={() => {
+    if (slider.id) {
+      handleDelete(slider.id);
+    } else {
+      // frontend se remove karna for new slider before saving
+      const updated = sliders.filter((s) => s.tempId !== slider.tempId);
+      setSliders(updated);
+    }
+  }}
+>
+  Delete
+</button>
+
+                  </div>
+                </td>
+              </tr>
             ))}
 
-            <button
-              className="btn btn-outline-secondary mt-2"
-              onClick={() => addButton(index)}
-            >
-              + Add Button
-            </button>
-          </div>
-        </div>
-      ))}
-
-      <div className="text-center">
-        <button className="btn btn-primary btn-lg" onClick={saveBanners}>
-          Save Slider
-        </button>
+            {sliders.length === 0 && (
+              <tr>
+                <td colSpan="7" className="text-center text-muted py-4">
+                  No sliders found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
-  );
-}  
+    <style>
+      {`
+      .table th {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.form-control-sm {
+  font-size: 12px;
+}
+
+      `}
+    </style>
+  </div>
+);
+
+
+}

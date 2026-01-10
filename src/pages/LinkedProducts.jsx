@@ -1,127 +1,193 @@
-import { useState } from "react";
-import img1 from "../assets/img1.jpg";
-import img2 from "../assets/img2.jpg";
-import img3 from "../assets/img3.jpg";
-export default function LinkedProducts({ formValues, setFormValues }) {
+import { useState, useMemo } from "react";
+
+// 🔹 normalize helper
+const normalize = (str = "") =>
+  str.toLowerCase().replace(/\s+/g, "");
+
+export default function LinkedProducts({
+  allProducts = [],
+  formValues,
+  setFormValues,
+}) {
   const [term, setTerm] = useState("");
-  const [results, setResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-//   const [products, setProducts] = useState([]); 
 
-// useEffect(() => {
-//   fetch("https://api.example.com/products") // apni API URL yahan
-//     .then((res) => res.json())
-//     .then((data) => setProducts(data))
-//     .catch((err) => console.error("Error fetching products:", err));
-// }, []);
+  // 🔍 Base searched product
+  const searchedProduct = useMemo(() => {
+    if (!term) return null;
 
+    return allProducts.find((p) =>
+      normalize(p.product_name).includes(normalize(term))
+    );
+  }, [term, allProducts]);
 
-  const dummyProducts = [
-    { id: 1, product_name: "Red Shirt", product_image: img1 },
-    { id: 2, product_name: "Blue Jeans", product_image: img2 },
-    { id: 3, product_name: "Green Hat", product_image: img3 },
-  ];
+  // 🟢 Similar → Upsells (same category OR brand)
+  const upsellProducts = useMemo(() => {
+    if (!searchedProduct) return [];
 
-  // Search input handler
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setTerm(value);
+    return allProducts.filter(
+      (p) =>
+        p.id !== searchedProduct.id &&
+        (normalize(p.categories) === normalize(searchedProduct.categories) ||
+          normalize(p.brands) === normalize(searchedProduct.brands))
+    );
+  }, [searchedProduct, allProducts]);
 
-    if (value.length > 1) {
-      const filtered = dummyProducts.filter((p) =>
-        p.product_name.toLowerCase().includes(value.toLowerCase())
-      );
-      setResults(filtered);
-      setShowDropdown(filtered.length > 0);
-    } else {
-      setShowDropdown(false);
+  // 🔵 Related → Linked (same type, different category)
+  const linkedProducts = useMemo(() => {
+    if (!searchedProduct) return [];
+
+    return allProducts.filter(
+      (p) =>
+        p.id !== searchedProduct.id &&
+        normalize(p.type) === normalize(searchedProduct.type) &&
+        normalize(p.categories) !== normalize(searchedProduct.categories)
+    );
+  }, [searchedProduct, allProducts]);
+
+  // ➕ Add Upsell
+  const addUpsell = (id) => {
+    const list = formValues.upsells || [];
+    if (!list.includes(id)) {
+      setFormValues({ ...formValues, upsells: [...list, id] });
     }
   };
 
-  // Select a product (add chip)
-  const selectProduct = (product) => {
-    const existing = formValues.upsell || [];
-    if (!existing.find((p) => p.id === product.id)) {
-      setFormValues({ ...formValues, upsell: [...existing, product] });
+  // ➕ Add Linked
+  const addLinked = (id) => {
+    const list = formValues.linked_products || [];
+    if (!list.includes(id)) {
+      setFormValues({ ...formValues, linked_products: [...list, id] });
     }
-    setTerm("");
-    setShowDropdown(false);
   };
 
-  // Remove product chip
-  const removeProduct = (id) => {
-    const updated = (formValues.upsell || []).filter((p) => p.id !== id);
-    setFormValues({ ...formValues, upsell: updated });
+  // ❌ Remove
+  const removeItem = (key, id) => {
+    setFormValues({
+      ...formValues,
+      [key]: (formValues[key] || []).filter((x) => x !== id),
+    });
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="border rounded p-3 bg-white">
+
+      {/* 🔍 Search */}
       <input
-        type="text"
-        className="form-control my-3"
-        placeholder="Search product by names"
+        className="form-control mb-3"
+        placeholder="Search base product..."
         value={term}
-        onChange={handleSearch}
+        onChange={(e) => setTerm(e.target.value)}
       />
 
-      {showDropdown && (
-        <div
-          className="list-group"
-          style={{
-            position: "absolute",
-            width: "100%",
-            maxHeight: "200px",
-            overflowY: "auto",
-            zIndex: 10,
-          }}
-        >
-         {results.map((row) => (
-  <button
-    key={row.id}
-    className="list-group-item list-group-item-action d-flex align-items-center"
-    onClick={() => selectProduct(row)}
-  >
-    <img
-      src={row.product_image}
-      width="30"
-      alt=""
-      style={{ marginRight: "8px" }}
-    />
-    {row.product_name}
-  </button>
-))}
+      {!searchedProduct && term && (
+        <p className="text-muted">No product found</p>
+      )}
 
+      {searchedProduct && (
+        <div className="row g-3">
+
+          {/* 🟢 UPSSELLS */}
+          <div className="col-md-6">
+            <h6 className="fw-bold">Upsells (Similar)</h6>
+
+            {upsellProducts.length === 0 && (
+              <p className="text-muted">No similar products</p>
+            )}
+
+            {upsellProducts.map((p) => (
+              <div
+                key={p.id}
+                className="border p-2 mb-2 d-flex justify-content-between align-items-center"
+              >
+                <span>{p.product_name}</span>
+                {formValues.upsells?.includes(p.id) ? (
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => removeItem("upsells", p.id)}
+                  >
+                    Remove
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-success"
+                    onClick={() => addUpsell(p.id)}
+                  >
+                    Add
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* 🔵 LINKED PRODUCTS */}
+          <div className="col-md-6">
+            <h6 className="fw-bold">Linked Products (Related)</h6>
+
+            {linkedProducts.length === 0 && (
+              <p className="text-muted">No related products</p>
+            )}
+
+            {linkedProducts.map((p) => (
+              <div
+                key={p.id}
+                className="border p-2 mb-2 d-flex justify-content-between align-items-center"
+              >
+                <span>{p.product_name}</span>
+                {formValues.linked_products?.includes(p.id) ? (
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() =>
+                      removeItem("linked_products", p.id)
+                    }
+                  >
+                    Remove
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => addLinked(p.id)}
+                  >
+                    Add
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      <div className="mt-2">
-        <h6>Selected Upsells:</h6>
-        <div>
-          {(formValues.upsell || []).map((p) => (
-            <div
-              key={p.id}
-              className="d-inline-block border p-1 mr-1 mt-1"
-            >
-              <img
-                src={p.product_image}
-                width="30"
-                alt=""
-              />{" "}
-              {p.product_name}
-              <span
-                style={{
-                  cursor: "pointer",
-                  color: "red",
-                  marginLeft: "5px",
-                }}
-                onClick={() => removeProduct(p.id)}
-              >
-                &times;
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* ✅ SELECTED SUMMARY */}
+      <hr />
+
+      <h6>Selected Upsells</h6>
+      {(formValues.upsells || []).map((id) => {
+        const p = allProducts.find((x) => x.id === id);
+        return (
+          <span
+            key={id}
+            className="badge bg-success me-2 mb-2"
+            onClick={() => removeItem("upsells", id)}
+            style={{ cursor: "pointer" }}
+          >
+            {p?.product_name} ×
+          </span>
+        );
+      })}
+
+      <h6 className="mt-3">Selected Linked Products</h6>
+      {(formValues.linked_products || []).map((id) => {
+        const p = allProducts.find((x) => x.id === id);
+        return (
+          <span
+            key={id}
+            className="badge bg-primary me-2 mb-2"
+            onClick={() => removeItem("linked_products", id)}
+            style={{ cursor: "pointer" }}
+          >
+            {p?.product_name} ×
+          </span>
+        );
+      })}
     </div>
   );
 }
