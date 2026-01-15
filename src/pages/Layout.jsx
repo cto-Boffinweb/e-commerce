@@ -60,12 +60,12 @@ const Layout = () => {
             </Link>
           </li>
           <li className="shadow my-2">
-            <Link to="/category" className="nav-link text-decoration-none text-secondary">
+            <Link to="/managecategory" className="nav-link text-decoration-none text-secondary">
               <FaUsers className="me-2" /> {!collapsed && "Manage Category"}
             </Link>
           </li>
           <li className="shadow my-2">
-            <Link to="/Brands" className="nav-link text-decoration-none text-secondary">
+            <Link to="/managebrands" className="nav-link text-decoration-none text-secondary">
               <FaChartBar className="me-2" /> {!collapsed && "Manage Brands"}
             </Link>
           </li>

@@ -129,18 +129,24 @@ const [variationData, setVariationData] = useState([]);
 				"linked_products",
 				JSON.stringify(formValues.linked_products || [])
 			);
-			data.append("attributes", JSON.stringify(formValues.attributes || []));
+const formattedAttributes = {};
 
-			data.append("description", formValues.fullDesc);
-			data.append(
-				"tags",
-				JSON.stringify(formValues.tags.split(",").map((t) => t.trim()))
-			);
-			data.append("main_image", formValues.image);
-			data.append("attributes", JSON.stringify(formValues.attributes || []));
-			console.log("ATTRIBUTES =>", formValues.attributes);
+formValues.attributes.forEach((attr) => {
+  if (attr.name && attr.values && attr.values.length > 0) {
+    formattedAttributes[attr.name] = attr.values;
+  }
+});
 
-			data.append("variations", JSON.stringify(formValues.variationData || []));
+data.append("attributes", JSON.stringify(formattedAttributes));
+
+data.append("description", formValues.fullDesc);
+data.append(
+  "tags",
+  JSON.stringify(formValues.tags.split(",").map((t) => t.trim()))
+);
+data.append("main_image", formValues.image);
+
+data.append("variations", JSON.stringify(formValues.variationData || []));
 
 			try {
 				await axios.post("http://localhost:5000/api/admin/addProducts", data, {
