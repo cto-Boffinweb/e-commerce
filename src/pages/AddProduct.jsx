@@ -1,22 +1,32 @@
 import { useRef, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
+import { useLocation} from "react-router-dom";
 import ProductData from "./ProductData";
 import img2 from "../assets/img2.jpg";
 import { validate } from "../components/Validation";
 import axios from "axios";
 import { useEffect } from "react";
 
+// 2-letter abbreviation from name
+const getAbbr = (text = "") =>
+	text
+		.split(" ")
+		.map((w) => w[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2);
+
 export default function AddProduct() {
-	const [variations, setVariations] = useState([]);
-const [variationData, setVariationData] = useState([]);
+	const [variationData, setVariationData] = useState([]);
 
 	const [allProducts, setAllProducts] = useState([]);
 	const [types, setTypes] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [brands, setBrands] = useState([]);
 	const [variationPrices, setVariationPrices] = useState({ mrp: [], sell: [] });
+	const [subcategories, setSubcategories] = useState([]);
+	const [variations, setVariations] = useState([]);
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
@@ -26,18 +36,29 @@ const [variationData, setVariationData] = useState([]);
 		tags: "",
 		type: "",
 		category: "",
+		subcategories: "",
 		brand: "",
 		shortDesc: "",
 		fullDesc: "",
 		image: null,
+		manageStock: "yes",
+		stockQty: "",
 		productType: "variable",
 		attributes: [],
 		attrName: "",
 		attrValues: "",
-		variations: [],
-		variationData: [],
+
 		upsells: [],
 		linked_products: [],
+		shipping: {
+			weight: "",
+			length: "",
+			width: "",
+			height: "",
+			base_price: "",
+			mainProductSKU: "",
+			mainProductCode: "",
+		},
 	});
 	const [errors, setErrors] = useState({});
 	const [imagePreview, setImagePreview] = useState(null);
@@ -83,82 +104,225 @@ const [variationData, setVariationData] = useState([]);
 
 		fetchData();
 	}, []);
+	// 🔥 CATEGORY CHANGE → FETCH SUBCATEGORIES
+	useEffect(() => {
+		if (!formValues.category) {
+			setSubcategories([]);
+			setFormValues((prev) => ({ ...prev, subcategory: "" }));
+			return;
+		}
+
+		const fetchSubcategories = async () => {
+			try {
+				const res = await axios.get(
+					`http://localhost:5000/api/admin/subcategories/${formValues.category}`,
+				);
+				setSubcategories(res.data);
+			} catch (err) {
+				console.error("Subcategory fetch error", err);
+				setSubcategories([]);
+			}
+		};
+
+		fetchSubcategories();
+	}, [formValues.category]);
 
 	const rules = {
 		productName: { required: true, min: 3 },
 		type: { required: true },
 		tags: { required: true },
 		category: { required: true },
+		subcategories: { required: false, nullable: true },
+
 		brand: { required: true },
 		shortDesc: { required: true, min: 10 },
 		fullDesc: { required: true, min: 20 },
 		image: { required: true, type: "image" },
+		shipping: {
+			weight: { required: true },
+			length: { required: true },
+			width: { required: true },
+			height: { required: true },
+		},
 	};
 	// ================= VARIATIONS =================
 	const generateVariations = () => {
-		if (!formValues.attributes || formValues.attributes.length === 0) return;
+		const { attributes } = formValues;
+		if (!attributes.length) return;
 
-		// attributes values extract
-		const valuesArray = formValues.attributes.map((attr) => attr.values);
-
-		// cartesian product (all combinations)
-		const combinations = valuesArray.reduce(
-			(a, b) => a.flatMap((d) => b.map((e) => [...d, e])),
-			[[]]
+		const valuesArray = attributes.map((attr) =>
+			Array.isArray(attr.values)
+				? attr.values
+				: attr.values.split(",").map((v) => v.trim()),
 		);
 
-		setFormValues({
-			...formValues,
-			variations: combinations,
+		const combos = valuesArray.reduce(
+			(a, b) => a.flatMap((d) => b.map((e) => [...d, e])),
+			[[]],
+		);
+
+		const data = combos.map((v) => {
+			const clean = v
+				.join("-")
+				.toUpperCase()
+				.replace(/[^A-Z0-9-]/g, "");
+			return {
+				variationName: v.join(" / "),
+				variationValue: v.join(","),
+				variationSKU: `${formValues.mainProductSKU}-${clean}`,
+				variationCode: `${formValues.mainProductCode}-${clean}`,
+				mrp: "",
+				sell: "",
+				stock: 0,
+			};
 		});
+
+		setVariations(combos);
+		setVariationData(data);
 	};
 
+	// edit form
+	// --- EDIT FORM PREFILL EFFECTS ---
+	const location = useLocation();
+	const editingProduct = location.state?.product || null;
+
+	// Step 1: Prefill main product info (excluding subcategory)
+	useEffect(() => {
+		if (
+			!editingProduct ||
+			categories.length === 0 ||
+			brands.length === 0 ||
+			types.length === 0
+		)
+			return;
+
+		setFormValues((prev) => ({
+			...prev,
+			productName: editingProduct.product_name || "",
+			tags: editingProduct.tags?.join(", ") || "",
+			type: String(editingProduct.type_id || ""),
+			category: String(editingProduct.category_id || ""),
+			brand: String(editingProduct.brand_id || ""),
+			shortDesc: editingProduct.short_description || "",
+			fullDesc: editingProduct.description || "",
+			image: null,
+			productType: "variable",
+			attributes: editingProduct.product_attributes
+				? Object.entries(editingProduct.product_attributes).map(
+						([name, values], i) => ({
+							id: i + 1,
+							name,
+							values,
+						}),
+					)
+				: [],
+			upsells: editingProduct.upsells || [],
+			linked_products: editingProduct.linked_products || [],
+			shipping: editingProduct.shipping || {
+				weight: "",
+				length: "",
+				width: "",
+				height: "",
+			},
+		}));
+
+		if (editingProduct.main_image) {
+			setImagePreview(`http://localhost:5000/${editingProduct.main_image}`);
+		}
+	}, [editingProduct, categories, brands, types]);
+
+	// Step 2: Fetch subcategories when category is set
+	useEffect(() => {
+		if (!formValues.category) {
+			setSubcategories([]);
+			setFormValues((prev) => ({ ...prev, subcategories: "" }));
+			return;
+		}
+
+		const fetchSubcategories = async () => {
+			try {
+				const res = await axios.get(
+					`http://localhost:5000/api/admin/subcategories/${formValues.category}`,
+				);
+				setSubcategories(res.data);
+			} catch (err) {
+				console.error("Subcategory fetch error", err);
+				setSubcategories([]);
+			}
+		};
+
+		fetchSubcategories();
+	}, [formValues.category]);
+
+	// handle publish
 	const handlePublish = async () => {
 		const newErrors = validate(formValues, rules);
 		setErrors(newErrors);
+		if (Object.keys(newErrors).length !== 0) return;
+		if (formValues.productType === "variable" && variationData.length === 0) {
+			alert("Please generate variations first");
+			return;
+		}
 
-		if (Object.keys(newErrors).length === 0) {
-			const data = new FormData();
-			data.append("product_name", formValues.productName);
-			data.append("categories", formValues.category);
-			data.append("brands", formValues.brand);
-			data.append("type", formValues.type);
-			data.append("short_description", formValues.shortDesc);
-			data.append("upsells", JSON.stringify(formValues.upsells || []));
-			data.append(
-				"linked_products",
-				JSON.stringify(formValues.linked_products || [])
-			);
-const formattedAttributes = {};
+		const data = new FormData();
 
-formValues.attributes.forEach((attr) => {
-  if (attr.name && attr.values && attr.values.length > 0) {
-    formattedAttributes[attr.name] = attr.values;
-  }
-});
-
-data.append("attributes", JSON.stringify(formattedAttributes));
-
-data.append("description", formValues.fullDesc);
+		data.append("product_name", formValues.productName);
+		data.append("categories", formValues.category);
+		data.append("subcategories", formValues.subcategories);
+		data.append("brands", formValues.brand);
+		data.append("type", formValues.type);
+		data.append("short_description", formValues.shortDesc);
+		data.append("description", formValues.fullDesc);
+		data.append("main_image", formValues.image);
+		data.append("manage_stock", formValues.manageStock === "yes" ? 1 : 0);
 data.append(
-  "tags",
-  JSON.stringify(formValues.tags.split(",").map((t) => t.trim()))
+  "stock_qty",
+  formValues.manageStock === "yes" 
+    ? Number(formValues.stockQty) || 0 
+    : 0
 );
-data.append("main_image", formValues.image);
 
-data.append("variations", JSON.stringify(formValues.variationData || []));
+		data.append(
+			"tags",
+			JSON.stringify(formValues.tags.split(",").map((t) => t.trim())),
+		);
 
-			try {
-				await axios.post("http://localhost:5000/api/admin/addProducts", data, {
-					headers: { "Content-Type": "multipart/form-data" },
-				});
-				alert("Product added successfully!");
+		data.append("upsells", JSON.stringify(formValues.upsells || []));
+		data.append(
+			"linked_products",
+			JSON.stringify(formValues.linked_products || []),
+		);
+		data.append("weight", formValues.shipping.weight || 0);
+		data.append("length", formValues.shipping.length || 0);
+		data.append("width", formValues.shipping.width || 0);
+		data.append("height", formValues.shipping.height || 0);
 
+		data.append("variations", JSON.stringify(variationData));
+
+		const formattedAttributes = {};
+		formValues.attributes.forEach((attr) => {
+			if (attr.name && attr.values?.length) {
+				formattedAttributes[attr.name] = attr.values;
+			}
+		});
+		data.append("product_attributes", JSON.stringify(formattedAttributes));
+
+		try {
+			if (editingProduct) {
+				//  EDIT
+				await axios.put(
+					`http://localhost:5000/api/admin/productlist/${editingProduct.id}`,
+					data,
+					{ headers: { "Content-Type": "multipart/form-data" } },
+				);
+				alert("Product updated successfully!");
+				// ✅ Reset form after adding a new product
 				setFormValues({
 					productName: "",
 					tags: "",
 					type: "",
 					category: "",
+					subcategories: "",
 					brand: "",
 					shortDesc: "",
 					fullDesc: "",
@@ -167,17 +331,91 @@ data.append("variations", JSON.stringify(formValues.variationData || []));
 					attributes: [],
 					attrName: "",
 					attrValues: "",
-					variations: [],
+					upsells: [],
+					linked_products: [],
+					shipping: {
+						weight: "",
+						length: "",
+						width: "",
+						height: "",
+						base_price: "",
+						mainProductSKU: "",
+						mainProductCode: "",
+						isDeliveryCharge: "no",
+						deliveryCharge: "",
+					},
 				});
-
+				setVariationData([]);
+				setVariations([]);
 				setImagePreview(null);
 				if (fileRef.current) fileRef.current.value = "";
-			} catch (err) {
-				console.error(err);
-				alert("Error adding product!");
+			} else {
+				//  ADD
+				await axios.post("http://localhost:5000/api/admin/addProducts", data, {
+					headers: { "Content-Type": "multipart/form-data" },
+				});
+				alert("Product added successfully!");
+				setFormValues({
+					productName: "",
+					tags: "",
+					type: "",
+					category: "",
+					subcategories: "",
+					brand: "",
+					shortDesc: "",
+					fullDesc: "",
+					image: null,
+					manageStock: "yes",
+					stockQty: "",
+					productType: "variable",
+					attributes: [],
+					attrName: "",
+					attrValues: "",
+					upsells: [],
+					linked_products: [],
+					shipping: {
+						weight: "",
+						length: "",
+						width: "",
+						height: "",
+						base_price: "",
+						mainProductSKU: "",
+						mainProductCode: "",
+					},
+				});
+
+				setVariationData([]);
+				setVariations([]);
+				setImagePreview(null);
+				setErrors({});
+				if (fileRef.current) fileRef.current.value = "";
 			}
+		} catch (err) {
+			console.error(err);
+			alert("Something went wrong");
 		}
 	};
+
+	// sku n product code
+	useEffect(() => {
+		if (!formValues.productName || !formValues.brand || !brands.length) return;
+
+		const brandObj = brands.find(
+			(b) => String(b.id) === String(formValues.brand),
+		);
+
+		if (!brandObj) return;
+
+		const brandAbbr = getAbbr(brandObj.brand_name);
+		const productAbbr = getAbbr(formValues.productName);
+		const tempId = String(Date.now()).slice(-4); // last 4 digits of timestamp
+
+		setFormValues((prev) => ({
+			...prev,
+			mainProductSKU: `${brandAbbr}${productAbbr}${tempId}`,
+			mainProductCode: `${brandAbbr}-${productAbbr}-${tempId}`,
+		}));
+	}, [formValues.productName, formValues.brand, brands]);
 
 	if (loading) {
 		return (
@@ -217,6 +455,12 @@ data.append("variations", JSON.stringify(formValues.variationData || []));
 								setFormValues({ ...formValues, productName: e.target.value })
 							}
 						/>
+						{formValues.mainProductCode && (
+							<small className='text-muted'>
+								Product Code: <b>{formValues.mainProductCode}</b>
+							</small>
+						)}
+
 						{errors.productName && (
 							<p style={{ color: "red" }}>{errors.productName}</p>
 						)}
@@ -268,15 +512,15 @@ data.append("variations", JSON.stringify(formValues.variationData || []));
 							errors={errors}
 							setErrors={setErrors}
 							allProducts={allProducts}
-							variationPrices={variationPrices}
-							setVariationPrices={setVariationPrices}
 							handleAddAttribute={handleAddAttribute}
 							handleRemoveAttribute={handleRemoveAttribute}
 							generateVariations={generateVariations}
-							 variations={variations}              
-  setVariations={setVariations}        
-  variationData={variationData}        
-  setVariationData={setVariationData}
+							variationData={variationData}
+							setVariationData={setVariationData}
+							variations={variations}
+							setVariations={setVariations}
+							mainProductSKU={formValues.mainProductSKU}
+							mainProductCode={formValues.mainProductCode}
 						/>
 					)}
 				</div>
@@ -325,7 +569,11 @@ data.append("variations", JSON.stringify(formValues.variationData || []));
 							className='form-select'
 							value={formValues.category}
 							onChange={(e) =>
-								setFormValues({ ...formValues, category: e.target.value })
+								setFormValues({
+									...formValues,
+									category: e.target.value,
+									subcategories: "",
+								})
 							}>
 							<option value=''>Select Category</option>
 							{categories &&
@@ -340,6 +588,29 @@ data.append("variations", JSON.stringify(formValues.variationData || []));
 						{errors.category && (
 							<p style={{ color: "red" }}>{errors.category}</p>
 						)}
+					</div>
+					{/* //subcategories */}
+
+					<div className='panel-box border p-3 mb-2 shadow'>
+						<label className='form-label'>Subcategories</label>
+						<select
+							className='form-select'
+							name='subcategories'
+							value={formValues.subcategories || ""}
+							onChange={(e) =>
+								setFormValues({
+									...formValues,
+									subcategories: e.target.value,
+								})
+							}>
+							<option value=''>Select Subcategory</option>
+
+							{subcategories.map((sc, index) => (
+								<option key={`subcat-${sc.id}-${index}`} value={sc.id}>
+									{sc.name}
+								</option>
+							))}
+						</select>
 					</div>
 
 					{/* Brands */}

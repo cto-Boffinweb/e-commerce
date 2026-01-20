@@ -90,13 +90,16 @@ export default function ProductData({
 
 {/* Inside Variations tab */}
 <div className="tab-pane fade text-secondary" id="variations">
- <VariationTable
-  attributes={formValues.attributes}   // attributes should have values
-  variations={variations}
-  setVariations={setVariations}
-  variationData={variationData}
-  setVariationData={setVariationData}
-/>
+  <VariationTable
+    attributes={formValues.attributes}
+    variations={variations}
+    setVariations={setVariations}
+    variationData={variationData}
+    setVariationData={setVariationData}
+    mainProductSKU={formValues.mainProductSKU}
+    mainProductCode={formValues.mainProductCode}
+    generateVariations={generateVariations}
+  />
 
 
 </div>
@@ -107,6 +110,8 @@ export default function ProductData({
     formValues={formValues}
     setFormValues={setFormValues}
     errors={errors}
+	  variationData={variationData} 
+
   />
 </div>
 

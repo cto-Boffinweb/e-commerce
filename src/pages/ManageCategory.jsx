@@ -19,12 +19,13 @@ export default function ManageCategory() {
 	});
 
 	 useEffect(() => {
-    
-    axios
-      .get("http://localhost:5000/api/types") 
-      .then((res) => setTypes(res.data))
-      .catch((err) => console.error("Type fetch error:", err));
-  }, []);
+  fetch("http://localhost:5000/api/admin/categories")
+    .then(res => res.json())
+    .then(data => {
+      console.log("CATEGORY API DATA 👉", data);
+    });
+}, []);
+
 
 
 	// -----------------------
@@ -304,19 +305,21 @@ export default function ManageCategory() {
 			</div>
 
 			<Table
-				apiUrl='http://localhost:5000/api/admin/categories'
-				refreshKey={refreshKey}
-				columns={[
-					{ key: "image", label: "Image", type: "image" },
-					{ key: "category_name", label: "Category Name" },
-					{ key: "type_id", label: " Type Id" },
-					{ key: "created_at", label: "Created At" },
-					{ key: "last_updated", label: "Updated At" },
-					{ key: "status", label: "Status", type: "status" },
-				]}
-				onEdit={handleEdit}
-				onDelete={handleDelete}
-			/>
+  apiUrl='http://localhost:5000/api/admin/categories'
+  refreshKey={refreshKey}
+  pageSize={5} 
+  columns={[
+    { key: "image", label: "Image", type: "image" },
+    { key: "category_name", label: "Category Name" },
+  { key: "type_name", label: "Category Type" }, 
+    { key: "created_at", label: "Created At" },
+    { key: "last_updated", label: "Updated At" },
+    { key: "status", label: "Status", type: "status" },
+  ]}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+/>
+
 		</div>
 	);
 }

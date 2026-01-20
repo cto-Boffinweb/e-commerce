@@ -6,22 +6,10 @@ export default function VariationTable({
   setVariations,
   variationData = [], // [{ sku, productCode, mrp, sell, stock }]
   setVariationData,
+   mainProductSKU,
+  mainProductCode,
+  generateVariations,
 }) {
-  // Generate variations from attributes
- const generateVariations = () => {
-  if (!attributes || attributes.length === 0) return;
-
-  const valuesArray = attributes.map(attr => attr.values);
-  const combinations = valuesArray.reduce(
-    (a, b) => a.flatMap(d => b.map(e => [...d, e])),
-    [[]]
-  );
-
-  setVariations(combinations);       // ✅ parent state update
-  setVariationData(combinations.map(() => ({
-    sku: "", productCode: "", mrp: "", sell: "", stock: ""
-  })));
-};
 
 
   // Handle field changes for a specific variation
@@ -34,13 +22,15 @@ export default function VariationTable({
   return (
     <div>
       <p className="mt-2">Generate variations from attributes:</p>
-      <button
+   <button
   className="btn btn-outline-primary mb-2"
   disabled={!attributes || attributes.length === 0}
-  onClick={generateVariations}
+  onClick={generateVariations} 
 >
   Generate Variations
 </button>
+
+
     {console.log("Variations length:", variations.length, "Variations:", variations)}
 
 
@@ -58,24 +48,26 @@ export default function VariationTable({
           </thead>
           <tbody>
             {variations.map((v, idx) => (
-              <tr key={idx}>
+<tr key={`${idx}-${v.join('-')}`}> 
                 <td>{v.join(" / ")}</td>
-                <td>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    value={variationData[idx]?.sku || ""}
-                    onChange={(e) => handleChange(idx, "sku", e.target.value)}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    value={variationData[idx]?.productCode || ""}
-                    onChange={(e) => handleChange(idx, "productCode", e.target.value)}
-                  />
-                </td>
+              <td>
+  <input
+    type="text"
+    className="form-control form-control-sm"
+    value={variationData[idx]?.variationSKU || ""}
+    readOnly
+  />
+</td>
+<td>
+  <input
+    type="text"
+    className="form-control form-control-sm"
+    value={variationData[idx]?.variationCode || ""}
+    readOnly
+  />
+</td>
+
+
                 <td>
                  <input
   type="number"

@@ -236,6 +236,7 @@ fetch(url, {
         ]}
         onEdit={handleEdit}
         onDelete={handleDelete}
+         pageSize={7} 
       />
     </div>
   );

@@ -25,6 +25,9 @@ function App() {
             <Route path='managebrands' element={<ManageBrands/>} />
 
             <Route path='addproduct' element={<AddProduct/>} />
+            <Route path="/addproduct/:id" element={<AddProduct />} />
+
+
             <Route path='productlist' element={<ProductList />} />
             <Route path='coupon' element={<Coupons />} />
             <Route path='slidersetting' element={<SliderSetting />} />
