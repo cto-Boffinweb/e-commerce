@@ -1,137 +1,56 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Trendingsetting() {
-  const [trendingProducts, setTrendingProducts] = useState([
-    {
-      id: Date.now(),
-      image: "",
-      title: "",
-      price: "",
-      oldPrice: "",
-      stars: 5,
-    },
-  ]);
+export default function AdminTrendingSettings() {
+  const [products, setProducts] = useState([]);
 
-  // Update field value
-  const handleChange = (index, field, value) => {
-    const updated = [...trendingProducts];
-    updated[index][field] = value;
-    setTrendingProducts(updated);
-  };
+  useEffect(() => {
+    fetch("http://localhost:5000/api/admin/productlist")
+      .then(res => res.json())
+      .then(setProducts);
+  }, []);
 
-  // Add new item
-  const addItem = () => {
-    setTrendingProducts([
-      ...trendingProducts,
-      {
-        id: Date.now(),
-        image: "",
-        title: "",
-        price: "",
-        oldPrice: "",
-        stars: 5,
-      },
-    ]);
-  };
+  const toggleTrending = async (id, current) => {
+    await fetch(`http://localhost:5000/api/admin/products/trending/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_tranding: current ? 0 : 1 }),
+    });
 
-  // Remove item
-  const removeItem = (index) => {
-    const updated = [...trendingProducts];
-    updated.splice(index, 1);
-    setTrendingProducts(updated);
-  };
-
-  // Save to localStorage
-  const saveTrendingProducts = () => {
-    localStorage.setItem("trendingProducts", JSON.stringify(trendingProducts));
-    alert("Trending products saved");
-    window.dispatchEvent(new Event("trendingUpdated"));
+    setProducts(prev =>
+      prev.map(p =>
+        p.id === id ? { ...p, is_tranding: current ? 0 : 1 } : p
+      )
+    );
   };
 
   return (
-    <div className="container my-4">
-      <h2 className="text-center mb-4">Trending Products</h2>
-      
-      <table className="table table-bordered table-striped">
+    <div className="container">
+      <h5>Trending Products Settings</h5>
+
+      <table className="table table-bordered text-center">
         <thead className="table-dark">
           <tr>
             <th>#</th>
-            <th>Image Path</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Old Price</th>
-            <th>Stars</th>
-            <th>Actions</th>
+            <th>Product</th>
+            <th>Trending</th>
           </tr>
         </thead>
         <tbody>
-          {trendingProducts.map((item, index) => (
-            <tr key={item.id}>
-              <td>{index + 1}</td>
+          {products.map((p, i) => (
+            <tr key={p.id}>
+              <td>{i + 1}</td>
+              <td>{p.product_name}</td>
               <td>
                 <input
-                  type="text"
-                  className="form-control"
-                  value={item.image}
-                  onChange={(e) => handleChange(index, "image", e.target.value)}
-                  placeholder="/images/product1.jpg"
+                  type="checkbox"
+                  checked={p.is_tranding === 1}
+                  onChange={() => toggleTrending(p.id, p.is_tranding)}
                 />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={item.title}
-                  onChange={(e) => handleChange(index, "title", e.target.value)}
-                  placeholder="Product Title"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={item.price}
-                  onChange={(e) => handleChange(index, "price", e.target.value)}
-                  placeholder="$199"
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={item.oldPrice}
-                  onChange={(e) => handleChange(index, "oldPrice", e.target.value)}
-                  placeholder="$249"
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={item.stars}
-                  onChange={(e) => handleChange(index, "stars", e.target.value)}
-                  min="0"
-                  max="5"
-                />
-              </td>
-              <td>
-                <button className="btn btn-danger" onClick={() => removeItem(index)}>
-                  Remove
-                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <div className="d-flex justify-content-between mt-3">
-        <button className="btn btn-success" onClick={addItem}>
-          + Add Product
-        </button>
-        <button className="btn btn-primary" onClick={saveTrendingProducts}>
-          Save Trending Products
-        </button>
-      </div>
     </div>
   );
 }

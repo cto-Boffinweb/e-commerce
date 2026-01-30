@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { useLocation} from "react-router-dom";
 import ProductData from "./ProductData";
 import img2 from "../assets/img2.jpg";
 import { validate } from "../components/Validation";
 import axios from "axios";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // 2-letter abbreviation from name
 const getAbbr = (text = "") =>
@@ -19,15 +20,18 @@ const getAbbr = (text = "") =>
 
 export default function AddProduct() {
 	const [variationData, setVariationData] = useState([]);
+	const { id } = useParams();
+	const isEditMode = Boolean(id);
+	const [isPublishing, setIsPublishing] = useState(false);
 
 	const [allProducts, setAllProducts] = useState([]);
 	const [types, setTypes] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [brands, setBrands] = useState([]);
-	const [variationPrices, setVariationPrices] = useState({ mrp: [], sell: [] });
+
 	const [subcategories, setSubcategories] = useState([]);
 	const [variations, setVariations] = useState([]);
-
+	const navigate = useNavigate();
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
@@ -47,18 +51,18 @@ export default function AddProduct() {
 		attributes: [],
 		attrName: "",
 		attrValues: "",
-
+		mainProductSKU: "",
+		mainProductCode: "",
 		upsells: [],
 		linked_products: [],
-		shipping: {
-			weight: "",
-			length: "",
-			width: "",
-			height: "",
-			base_price: "",
-			mainProductSKU: "",
-			mainProductCode: "",
-		},
+
+		weight: "",
+		length: "",
+		width: "",
+		height: "",
+		isDeliveryCharge: "no",
+		deliveryCharge: 0,
+		base_price: "",
 	});
 	const [errors, setErrors] = useState({});
 	const [imagePreview, setImagePreview] = useState(null);
@@ -106,11 +110,7 @@ export default function AddProduct() {
 	}, []);
 	// 🔥 CATEGORY CHANGE → FETCH SUBCATEGORIES
 	useEffect(() => {
-		if (!formValues.category) {
-			setSubcategories([]);
-			setFormValues((prev) => ({ ...prev, subcategory: "" }));
-			return;
-		}
+		if (!formValues.category) return;
 
 		const fetchSubcategories = async () => {
 			try {
@@ -130,27 +130,44 @@ export default function AddProduct() {
 	const rules = {
 		productName: { required: true, min: 3 },
 		type: { required: true },
-		tags: { required: true },
 		category: { required: true },
-		subcategories: { required: false, nullable: true },
-
 		brand: { required: true },
-		shortDesc: { required: true, min: 10 },
-		fullDesc: { required: true, min: 20 },
-		image: { required: true, type: "image" },
-		shipping: {
-			weight: { required: true },
-			length: { required: true },
-			width: { required: true },
-			height: { required: true },
-		},
+
+		// 👇 ONLY when publishing
+		tags: { required: isPublishing },
+		shortDesc: { required: isPublishing, min: 10 },
+		fullDesc: { required: isPublishing, min: 20 },
+		image: { required: isPublishing, type: "image" },
+
+		weight: { required: isPublishing },
+		length: { required: isPublishing },
+		width: { required: isPublishing },
+		height: { required: isPublishing },
 	};
+
 	// ================= VARIATIONS =================
 	const generateVariations = () => {
-		const { attributes } = formValues;
-		if (!attributes.length) return;
+		const attributes = formValues.attributes;
 
-		const valuesArray = attributes.map((attr) =>
+		if (!Array.isArray(attributes) || attributes.length === 0) {
+			console.log("No attributes found");
+			return;
+		}
+
+		// 🧹 remove attributes with empty values
+		const validAttributes = attributes.filter(
+			(attr) =>
+				attr.values &&
+				(Array.isArray(attr.values)
+					? attr.values.length > 0
+					: attr.values.trim() !== ""),
+		);
+
+		if (validAttributes.length === 0) {
+			console.log("No valid attributes with values");
+			return;
+		}
+		const valuesArray = validAttributes.map((attr) =>
 			Array.isArray(attr.values)
 				? attr.values
 				: attr.values.split(",").map((v) => v.trim()),
@@ -169,8 +186,14 @@ export default function AddProduct() {
 			return {
 				variationName: v.join(" / "),
 				variationValue: v.join(","),
-				variationSKU: `${formValues.mainProductSKU}-${clean}`,
-				variationCode: `${formValues.mainProductCode}-${clean}`,
+				variationSKU: formValues.mainProductSKU
+					? `${formValues.mainProductSKU}-${clean}`
+					: clean,
+
+				variationCode: formValues.mainProductCode
+					? `${formValues.mainProductCode}-${clean}`
+					: clean,
+
 				mrp: "",
 				sell: "",
 				stock: 0,
@@ -182,213 +205,219 @@ export default function AddProduct() {
 	};
 
 	// edit form
-	// --- EDIT FORM PREFILL EFFECTS ---
-	const location = useLocation();
-	const editingProduct = location.state?.product || null;
-
-	// Step 1: Prefill main product info (excluding subcategory)
 	useEffect(() => {
-		if (
-			!editingProduct ||
-			categories.length === 0 ||
-			brands.length === 0 ||
-			types.length === 0
-		)
-			return;
+		if (!id) return;
 
-		setFormValues((prev) => ({
-			...prev,
-			productName: editingProduct.product_name || "",
-			tags: editingProduct.tags?.join(", ") || "",
-			type: String(editingProduct.type_id || ""),
-			category: String(editingProduct.category_id || ""),
-			brand: String(editingProduct.brand_id || ""),
-			shortDesc: editingProduct.short_description || "",
-			fullDesc: editingProduct.description || "",
-			image: null,
-			productType: "variable",
-			attributes: editingProduct.product_attributes
-				? Object.entries(editingProduct.product_attributes).map(
-						([name, values], i) => ({
-							id: i + 1,
-							name,
-							values,
-						}),
-					)
-				: [],
-			upsells: editingProduct.upsells || [],
-			linked_products: editingProduct.linked_products || [],
-			shipping: editingProduct.shipping || {
-				weight: "",
-				length: "",
-				width: "",
-				height: "",
-			},
-		}));
-
-		if (editingProduct.main_image) {
-			setImagePreview(`http://localhost:5000/${editingProduct.main_image}`);
-		}
-	}, [editingProduct, categories, brands, types]);
-
-	// Step 2: Fetch subcategories when category is set
-	useEffect(() => {
-		if (!formValues.category) {
-			setSubcategories([]);
-			setFormValues((prev) => ({ ...prev, subcategories: "" }));
-			return;
-		}
-
-		const fetchSubcategories = async () => {
+		const fetchProduct = async () => {
 			try {
-				const res = await axios.get(
-					`http://localhost:5000/api/admin/subcategories/${formValues.category}`,
+				const productRes = await axios.get(
+					`http://localhost:5000/api/admin/productlist/${id}`,
 				);
-				setSubcategories(res.data);
+				const product = productRes.data;
+
+				const variantRes = await axios.get(
+					`http://localhost:5000/api/admin/products/variants/${id}`,
+				);
+				const variants = variantRes.data?.variants || [];
+
+				// ✅ Image preview
+				setImagePreview(
+					product.main_image
+						? `http://localhost:5000/${product.main_image}`
+						: null,
+				);
+
+				// ✅ Prefill form
+				setFormValues((prev) => ({
+					...prev,
+					productName: product.product_name || "",
+					shortDesc: product.short_description || "",
+					fullDesc: product.description || "",
+					type: String(product.type || ""),
+
+					category: String(product.categories || ""),
+					subcategories: String(product.subcategories || ""),
+					brand: String(product.brands || ""),
+					mainProductSKU: product.product_sku || "",
+					mainProductCode: product.product_code || "",
+					attributes: product.product_attributes
+						? Object.entries(
+								typeof product.product_attributes === "string"
+									? JSON.parse(product.product_attributes)
+									: product.product_attributes,
+							).map(([name, values], i) => ({
+								id: i + 1,
+								name,
+								values: Array.isArray(values)
+									? values
+									: values.split(",").map((v) => v.trim()),
+							}))
+						: [],
+					// ✅ TAGS (string → input)
+					tags: product.tags
+						? typeof product.tags === "string"
+							? JSON.parse(product.tags).join(",")
+							: product.tags.join(",")
+						: "",
+
+					// ✅ UPSELLS (string → number[])
+					upsells: product.upsells
+						? typeof product.upsells === "string"
+							? JSON.parse(product.upsells).map(Number)
+							: product.upsells.map(Number)
+						: [],
+
+					// ✅ LINKED PRODUCTS (string → number[])
+					linked_products: product.linked_products
+						? typeof product.linked_products === "string"
+							? JSON.parse(product.linked_products).map(Number)
+							: product.linked_products.map(Number)
+						: [],
+					manageStock: product.manage_stock === 1 ? "yes" : "no",
+					stockQty: Number(product.stock_qty || 0),
+					deliveryCharge: Number(product.delivery_charge || 0),
+					isDeliveryCharge:
+						product.delivery_charge && product.delivery_charge > 0
+							? "yes"
+							: "no",
+
+					// ✅ SHIPPING FIELDS
+					weight: Number(product.weight || 0),
+					length: Number(product.length || 0),
+					width: Number(product.width || 0),
+					height: Number(product.height || 0),
+
+					productType: variants.length > 0 ? "variable" : "simple",
+				}));
+
+				// ✅ Prefill variations
+				setVariations(
+					variants.map((v) =>
+						v.variation_value ? v.variation_value.split(",") : [],
+					),
+				);
+
+				setVariationData(
+					variants.map((v) => ({
+						id: v.id,
+						variationName: v.variation_name || "",
+						variationValue: v.variation_value || "",
+						variationSKU: v.variation_sku || "",
+						variationCode: v.variation_product_code || "",
+						mrp: Number(v.base_price || 0),
+						sell: Number(v.sale_price || 0),
+						stock: Number(v.stock || 0),
+					})),
+				);
 			} catch (err) {
-				console.error("Subcategory fetch error", err);
-				setSubcategories([]);
+				console.error("Error fetching product:", err);
+				alert("Failed to load product data");
 			}
 		};
 
-		fetchSubcategories();
-	}, [formValues.category]);
-
+		fetchProduct();
+	}, [id]);
 	// handle publish
 	const handlePublish = async () => {
+		setIsPublishing(true);
+
 		const newErrors = validate(formValues, rules);
 		setErrors(newErrors);
-		if (Object.keys(newErrors).length !== 0) return;
-		if (formValues.productType === "variable" && variationData.length === 0) {
-			alert("Please generate variations first");
+
+		if (Object.keys(newErrors).length !== 0) {
+			setIsPublishing(false);
 			return;
 		}
 
-		const data = new FormData();
+		// variation check only on publish
+		if (formValues.productType === "variable" && variationData.length === 0) {
+			alert("Please generate variations before publishing");
+			setIsPublishing(false);
+			return;
+		}
 
+		// 3️⃣ Prepare FormData
+		const data = new FormData();
 		data.append("product_name", formValues.productName);
 		data.append("categories", formValues.category);
-		data.append("subcategories", formValues.subcategories);
+		data.append("subcategories", formValues.subcategories || null);
 		data.append("brands", formValues.brand);
-		data.append("type", formValues.type);
+		data.append("type", Number(formValues.type));
 		data.append("short_description", formValues.shortDesc);
 		data.append("description", formValues.fullDesc);
-		data.append("main_image", formValues.image);
 		data.append("manage_stock", formValues.manageStock === "yes" ? 1 : 0);
-data.append(
-  "stock_qty",
-  formValues.manageStock === "yes" 
-    ? Number(formValues.stockQty) || 0 
-    : 0
-);
+		data.append("delivery_charge", formValues.deliveryCharge || 0);
+		data.append("weight", parseFloat(formValues.weight) || 0);
+		data.append("length", parseFloat(formValues.length) || 0);
+		data.append("width", parseFloat(formValues.width) || 0);
+		data.append("height", parseFloat(formValues.height) || 0);
+		data.append("product_sku", formValues.mainProductSKU);
+		data.append("product_code", formValues.mainProductCode);
+		// Tags / upsells / linked products (JSON)
+		data.append("tags", JSON.stringify(formValues.tags.split(",")));
+		data.append("upsells", JSON.stringify(formValues.upsells));
+		data.append("linked_products", JSON.stringify(formValues.linked_products));
 
-		data.append(
-			"tags",
-			JSON.stringify(formValues.tags.split(",").map((t) => t.trim())),
-		);
+		// 4️⃣ Calculate total stock
+		let finalStock = 0;
+		if (formValues.productType === "variable") {
+			finalStock = variationData.reduce(
+				(sum, v) => sum + Number(v.stock || 0),
+				0,
+			);
+		} else {
+			finalStock = Number(formValues.stockQty || 0);
+		}
+		data.append("stock_qty", parseInt(finalStock) || 0);
 
-		data.append("upsells", JSON.stringify(formValues.upsells || []));
-		data.append(
-			"linked_products",
-			JSON.stringify(formValues.linked_products || []),
-		);
-		data.append("weight", formValues.shipping.weight || 0);
-		data.append("length", formValues.shipping.length || 0);
-		data.append("width", formValues.shipping.width || 0);
-		data.append("height", formValues.shipping.height || 0);
-
-		data.append("variations", JSON.stringify(variationData));
-
-		const formattedAttributes = {};
-		formValues.attributes.forEach((attr) => {
-			if (attr.name && attr.values?.length) {
-				formattedAttributes[attr.name] = attr.values;
-			}
-		});
+		// 5️⃣ Format attributes for backend
+		const formattedAttributes = formValues.attributes.reduce((acc, attr) => {
+			acc[attr.name] = Array.isArray(attr.values)
+				? attr.values
+				: attr.values.split(",").map((v) => v.trim());
+			return acc;
+		}, {});
 		data.append("product_attributes", JSON.stringify(formattedAttributes));
 
+		// 6️⃣ Append variations
+		data.append(
+			"variations",
+			JSON.stringify(
+				variationData.map((v) => ({
+					...v,
+					mrp: parseFloat(v.mrp) || 0,
+					sell: parseFloat(v.sell) || 0,
+					stock: parseInt(v.stock) || 0,
+				})),
+			),
+		);
+
+		// 7️⃣ Append main image
+		if (formValues.image) {
+			data.append("main_image", formValues.image);
+		}
+
+		// 8️⃣ Send request
 		try {
-			if (editingProduct) {
-				//  EDIT
+			if (isEditMode) {
+				console.log('edit poduct mode')
+				// ✅ Edit existing product
 				await axios.put(
-					`http://localhost:5000/api/admin/productlist/${editingProduct.id}`,
+					`http://localhost:5000/api/admin/productlist/${id}`,
 					data,
 					{ headers: { "Content-Type": "multipart/form-data" } },
 				);
-				alert("Product updated successfully!");
-				// ✅ Reset form after adding a new product
-				setFormValues({
-					productName: "",
-					tags: "",
-					type: "",
-					category: "",
-					subcategories: "",
-					brand: "",
-					shortDesc: "",
-					fullDesc: "",
-					image: null,
-					productType: "variable",
-					attributes: [],
-					attrName: "",
-					attrValues: "",
-					upsells: [],
-					linked_products: [],
-					shipping: {
-						weight: "",
-						length: "",
-						width: "",
-						height: "",
-						base_price: "",
-						mainProductSKU: "",
-						mainProductCode: "",
-						isDeliveryCharge: "no",
-						deliveryCharge: "",
-					},
+
+				navigate("/productlist", {
+					state: { success: "Product updated successfully" },
 				});
-				setVariationData([]);
-				setVariations([]);
-				setImagePreview(null);
-				if (fileRef.current) fileRef.current.value = "";
 			} else {
-				//  ADD
-				await axios.post("http://localhost:5000/api/admin/addProducts", data, {
+				// ✅ Add new product
+				await axios.post("http://localhost:5000/api/admin/products", data, {
 					headers: { "Content-Type": "multipart/form-data" },
 				});
-				alert("Product added successfully!");
-				setFormValues({
-					productName: "",
-					tags: "",
-					type: "",
-					category: "",
-					subcategories: "",
-					brand: "",
-					shortDesc: "",
-					fullDesc: "",
-					image: null,
-					manageStock: "yes",
-					stockQty: "",
-					productType: "variable",
-					attributes: [],
-					attrName: "",
-					attrValues: "",
-					upsells: [],
-					linked_products: [],
-					shipping: {
-						weight: "",
-						length: "",
-						width: "",
-						height: "",
-						base_price: "",
-						mainProductSKU: "",
-						mainProductCode: "",
-					},
-				});
 
-				setVariationData([]);
-				setVariations([]);
-				setImagePreview(null);
-				setErrors({});
-				if (fileRef.current) fileRef.current.value = "";
+				alert("Product added successfully!");
 			}
 		} catch (err) {
 			console.error(err);
@@ -403,18 +432,28 @@ data.append(
 		const brandObj = brands.find(
 			(b) => String(b.id) === String(formValues.brand),
 		);
-
 		if (!brandObj) return;
 
 		const brandAbbr = getAbbr(brandObj.brand_name);
 		const productAbbr = getAbbr(formValues.productName);
-		const tempId = String(Date.now()).slice(-4); // last 4 digits of timestamp
 
-		setFormValues((prev) => ({
-			...prev,
-			mainProductSKU: `${brandAbbr}${productAbbr}${tempId}`,
-			mainProductCode: `${brandAbbr}-${productAbbr}-${tempId}`,
-		}));
+		// 🔑 Decide if we need to generate
+		const shouldGenerate =
+			!formValues.mainProductSKU || // blank SKU
+			!formValues.mainProductCode; // blank Code
+
+		if (shouldGenerate) {
+			const uniquePart = String(Date.now()).slice(-4); // 4-digit unique ID
+
+			const newSKU = `${brandAbbr}-${productAbbr}-${uniquePart}`;
+			const newCode = `${brandAbbr}${productAbbr}${uniquePart}`;
+
+			setFormValues((prev) => ({
+				...prev,
+				mainProductSKU: newSKU,
+				mainProductCode: newCode,
+			}));
+		}
 	}, [formValues.productName, formValues.brand, brands]);
 
 	if (loading) {
@@ -474,6 +513,7 @@ data.append(
 
 						<div className='editor-box  '>
 							<CKEditor
+								key={formValues.shortDesc}
 								editor={ClassicEditor}
 								data={formValues.shortDesc}
 								onChange={(event, editor) => {

@@ -26,6 +26,17 @@ export default function ManageCategory() {
     });
 }, []);
 
+useEffect(() => {
+  axios
+    .get("http://localhost:5000/api/types")
+    .then((res) => {
+      console.log("TYPES 👉", res.data);
+      setTypes(res.data);
+    })
+    .catch((err) => {
+      console.error("Type fetch error", err);
+    });
+}, []);
 
 
 	// -----------------------
@@ -76,7 +87,6 @@ export default function ManageCategory() {
 		setLoading(true);
 		setSuccess("");
 
-		// 🔑 yahi decide hoga ADD ya EDIT
 		const url = editingCategory
 			? `http://localhost:5000/api/admin/categories/${editingCategory.id}`
 			: "http://localhost:5000/api/admin/categories";

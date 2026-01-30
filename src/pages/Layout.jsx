@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import boffin from '../assets/boffin.webp'
 import logo from '../assets/image.png'
 
@@ -15,15 +15,16 @@ import { RiCoupon4Line } from "react-icons/ri";
 import { MdOutlineAppSettingsAlt } from "react-icons/md";
 
 const Layout = () => {
+    const navigate = useNavigate();
+
   const [collapsed, setCollapsed] = useState(false);
   const [openProductMenu, setOpenProductMenu] = useState(false);
   const [openWebsiteMenu, setOpenWebsiteMenu] = useState(false);
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/adlogin";
+    navigate("/"); 
   };
-
   return (
     <div className="d-flex vh-100" style={{ overflowX: "hidden" }}>
 
@@ -55,17 +56,22 @@ const Layout = () => {
 
         <ul className="nav flex-column list-unstyled" style={{ fontSize: '14px' }}>
           <li className="shadow my-2">
-            <Link to="/" className="nav-link text-decoration-none text-secondary ">
+            <Link to="/admin" className="nav-link text-decoration-none text-secondary ">
               <FaHome className="me-2" /> {!collapsed && "Dashboard"}
             </Link>
           </li>
           <li className="shadow my-2">
-            <Link to="/managecategory" className="nav-link text-decoration-none text-secondary">
+            <Link to="/admin/managecategory" className="nav-link text-decoration-none text-secondary">
               <FaUsers className="me-2" /> {!collapsed && "Manage Category"}
             </Link>
           </li>
+           <li className="shadow my-2">
+            <Link to="/admin/managesubcategory" className="nav-link text-decoration-none text-secondary">
+              <FaUsers className="me-2" /> {!collapsed && "Manage SubCategory"}
+            </Link>
+          </li>
           <li className="shadow my-2">
-            <Link to="/managebrands" className="nav-link text-decoration-none text-secondary">
+            <Link to="/admin/managebrands" className="nav-link text-decoration-none text-secondary">
               <FaChartBar className="me-2" /> {!collapsed && "Manage Brands"}
             </Link>
           </li>
@@ -90,19 +96,19 @@ const Layout = () => {
             {openProductMenu && !collapsed && (
               <ul className="list-unstyled ms-4 mt-1">
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/addproduct">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/addproduct">
                     ➤ Add Product
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/productlist">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/productlist">
                     ➤ Product List
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/productstock">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/productstock">
                     ➤ Product Stock
                   </Link>
                 </li>
@@ -111,7 +117,7 @@ const Layout = () => {
 
           </li>
           <li className="shadow my-2">
-            <Link to="/coupon" className="nav-link text-decoration-none text-secondary">
+            <Link to="/admin/coupon" className="nav-link text-decoration-none text-secondary">
               <RiCoupon4Line className="me-2" /> {!collapsed && "Manage Coupons"}
             </Link>
           </li>
@@ -136,19 +142,19 @@ const Layout = () => {
             {openWebsiteMenu && !collapsed && (
               <ul className="list-unstyled ms-4 mt-1">
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/slidersetting">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/slidersetting">
                     ➤ Slider Settings
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/trendingsetting">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/trendingsetting">
                     ➤ Top Trending
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="nav-link text-secondary text-decoration-none" to="/popularsetting">
+                  <Link className="nav-link text-secondary text-decoration-none" to="/admin/popularsetting">
                     ➤ Popular Item
                   </Link>
                 </li>
@@ -209,11 +215,8 @@ const Layout = () => {
               </li>
               <li>
                 <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    localStorage.clear();
-                    window.location.href = "/adlogin";
-                  }}
+                  className="btn btn-link"
+                  onClick={handleLogout}
                 >
                   Logout
                 </button>

@@ -6,22 +6,19 @@ export default function ShippingInfo({ formValues, setFormValues, errors = {} })
       <div className="row">
         <div className="col-12 col-md-3 mb-3">
           <label>Weight (kg)</label>
-          <input
-            type="number"
-            className="form-control"
-           value={formValues.shipping.weight || ""}
-onChange={(e) =>
-  setFormValues({
-    ...formValues,
-    shipping: {
-      ...formValues.shipping,
-      weight: Number(e.target.value)
-    }
-  })
-}
+         <input
+  type="number"
+  value={formValues.weight ?? ""}
+      className="form-control"
 
+  onChange={e =>
+    setFormValues({
+      ...formValues,
+      weight: e.target.value === "" ? "" : Number(e.target.value)
+    })
+  }
+/>
 
-          />
           {errors.weight && (
             <p className="text-danger">{errors.weight}</p>
           )}
@@ -30,21 +27,16 @@ onChange={(e) =>
         <div className="col-12 col-md-3 mb-3">
           <label>Length (cm)</label>
           <input
-            type="number"
-            className="form-control"
-           value={formValues.shipping.length || ""}
-onChange={(e) =>
-  setFormValues({
-    ...formValues,
-    shipping: {
-      ...formValues.shipping,
-      length: Number(e.target.value)
+    type="number"
+    className="form-control"
+    value={formValues.length ?? ""}
+    onChange={(e) =>
+      setFormValues({
+        ...formValues,
+        length: e.target.value === "" ? "" : Number(e.target.value),
+      })
     }
-  })
-}
-
-
-          />
+  />
           {errors.length && (
             <p className="text-danger">{errors.length}</p>
           )}
@@ -52,22 +44,17 @@ onChange={(e) =>
 
         <div className="col-12 col-md-3 mb-3">
           <label>Width (cm)</label>
-          <input
-            type="number"
-            className="form-control"
-           value={formValues.shipping.width || ""}
-onChange={(e) =>
-  setFormValues({
-    ...formValues,
-    shipping: {
-      ...formValues.shipping,
-      width: Number(e.target.value)
+         <input
+    type="number"
+    className="form-control"
+    value={formValues.width ?? ""}
+    onChange={(e) =>
+      setFormValues({
+        ...formValues,
+        width: e.target.value === "" ? "" : Number(e.target.value),
+      })
     }
-  })
-}
-
-          />
-          {errors.width && (
+  />      {errors.width && (
             <p className="text-danger">{errors.width}</p>
           )}
         </div>
@@ -75,23 +62,16 @@ onChange={(e) =>
         <div className="col-12 col-md-3 mb-3">
           <label>Height (cm)</label>
           <input
-            type="number"
-            className="form-control"
-           value={formValues.shipping.height || ""}
-onChange={(e) =>
-  setFormValues({
-    ...formValues,
-    shipping: {
-      ...formValues.shipping,
-      height: Number(e.target.value)
+    type="number"
+    className="form-control"
+    value={formValues.height ?? ""}
+    onChange={(e) =>
+      setFormValues({
+        ...formValues,
+        height: e.target.value === "" ? "" : Number(e.target.value),
+      })
     }
-  })
-}
-
-
-
-          />
-          {errors.height && (
+  />      {errors.height && (
             <p className="text-danger">{errors.height}</p>
           )}
         </div>

@@ -86,73 +86,73 @@ export default function LinkedProducts({
       {searchedProduct && (
         <div className="row g-3">
 
-          {/* 🟢 UPSSELLS */}
-          <div className="col-md-6">
-            <h6 className="fw-bold">Upsells (Similar)</h6>
+         {/* 🟢 UPSSELLS */}
+<div className="col-md-6">
+  <h6 className="fw-bold">Upsells (Similar)</h6>
 
-            {upsellProducts.length === 0 && (
-              <p className="text-muted">No similar products</p>
-            )}
+  {allProducts.length === 0 && <p className="text-muted">No products</p>}
 
-            {upsellProducts.map((p) => (
-              <div
-                key={p.id}
-                className="border p-2 mb-2 d-flex justify-content-between align-items-center"
-              >
-                <span>{p.product_name}</span>
-                {formValues.upsells?.includes(p.id) ? (
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => removeItem("upsells", p.id)}
-                  >
-                    Remove
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-sm btn-success"
-                    onClick={() => addUpsell(p.id)}
-                  >
-                    Add
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+  {(searchedProduct ? upsellProducts : allProducts).map((p) => {
+    if (p.id === (searchedProduct?.id || -1)) return null; // skip base product
+    return (
+      <div
+        key={p.id}
+        className="border p-2 mb-2 d-flex justify-content-between align-items-center"
+      >
+        <span>{p.product_name}</span>
+        {formValues.upsells?.includes(p.id) ? (
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => removeItem("upsells", p.id)}
+          >
+            Remove
+          </button>
+        ) : (
+          <button
+            className="btn btn-sm btn-success"
+            onClick={() => addUpsell(p.id)}
+          >
+            Add
+          </button>
+        )}
+      </div>
+    );
+  })}
+</div>
 
           {/* 🔵 LINKED PRODUCTS */}
-          <div className="col-md-6">
-            <h6 className="fw-bold">Linked Products (Related)</h6>
+          {/* 🔵 LINKED PRODUCTS */}
+<div className="col-md-6">
+  <h6 className="fw-bold">Linked Products (Related)</h6>
 
-            {linkedProducts.length === 0 && (
-              <p className="text-muted">No related products</p>
-            )}
+  {(searchedProduct ? linkedProducts : allProducts).map((p) => {
+    if (p.id === (searchedProduct?.id || -1)) return null; // skip base product
+    return (
+      <div
+        key={p.id}
+        className="border p-2 mb-2 d-flex justify-content-between align-items-center"
+      >
+        <span>{p.product_name}</span>
+        {formValues.linked_products?.includes(p.id) ? (
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => removeItem("linked_products", p.id)}
+          >
+            Remove
+          </button>
+        ) : (
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => addLinked(p.id)}
+          >
+            Add
+          </button>
+        )}
+      </div>
+    );
+  })}
+</div>
 
-            {linkedProducts.map((p) => (
-              <div
-                key={p.id}
-                className="border p-2 mb-2 d-flex justify-content-between align-items-center"
-              >
-                <span>{p.product_name}</span>
-                {formValues.linked_products?.includes(p.id) ? (
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() =>
-                      removeItem("linked_products", p.id)
-                    }
-                  >
-                    Remove
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={() => addLinked(p.id)}
-                  >
-                    Add
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
       )}
 

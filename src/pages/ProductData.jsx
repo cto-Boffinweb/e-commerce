@@ -5,7 +5,10 @@ import VariationTable from "./VariationTable";
 import GeneralInfo from "./GeneralInfo";
 import ShippingInfo from "./ShippingInfo";
 
+
 export default function ProductData({
+	
+	
   formValues = {},
   setFormValues,
   errors = {},
@@ -20,6 +23,7 @@ export default function ProductData({
 }) {
 
 	return (
+		
 		<div className='container ' style={{ color: "grey", fontSize: "14px" }}>
 			<div className='row '>
 				{/* LEFT SIDE  Tabs */}

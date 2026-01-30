@@ -1,3 +1,6 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './pages/Layout'
 import Dashboard from './pages/Dashboard'
@@ -12,20 +15,27 @@ import Popularsetting from './pages/Popularsetting'
 import AddProduct from './pages/AddProduct'
 import ManageCategory from './pages/ManageCategory'
 import ManageBrands from './pages/ManageBrands'
+import ManageSubcate from './pages/ManageSubcate';
+import AdminRoutes from './routes/AdminRoutes';
+import AdminLogin from './pages/AdminLogin';
+
+
 function App() {
 
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<Layout />}>
+          {/* <Route path='/' element={<Layout/>}>
 
             <Route index element={<Dashboard />} />
             <Route path='managecategory' element={<ManageCategory/>} />
+                        <Route path='managesubcategory' element={<ManageSubcate/>} />
+
             <Route path='managebrands' element={<ManageBrands/>} />
 
             <Route path='addproduct' element={<AddProduct/>} />
-            <Route path="/addproduct/:id" element={<AddProduct />} />
+            <Route path="/editproduct/:id" element={<AddProduct />} />
 
 
             <Route path='productlist' element={<ProductList />} />
@@ -36,7 +46,10 @@ function App() {
           </Route>
 
           <Route path='/table' element={<Table />} />
-          <Route path='/productdata' element={<ProductData />} />
+          <Route path='/productdata' element={<ProductData />} /> */}
+                     <Route path="/" element={<AdminLogin/>} />
+
+        <Route path="/admin/*" element={<AdminRoutes/>} />
 
         </Routes>
       </BrowserRouter>

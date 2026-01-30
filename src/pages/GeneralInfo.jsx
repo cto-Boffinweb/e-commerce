@@ -1,14 +1,26 @@
+import { useEffect } from "react";
+
 export default function GeneralInfo({
 	formValues,
 	setFormValues,
 	errors = {},
 	variationData = [],
 }) {
+
+	const totalStock = variationData.reduce(
+  (sum, v) => sum + Number(v.stock || 0),
+  0
+);
+
 	// Calculate total stock from variations if product is variable
-	const totalStock =
-		formValues.productType === "variable"
-			? variationData.reduce((sum, v) => sum + Number(v.stock || 0), 0)
-			: Number(formValues.stockQty || 0);
+	useEffect(() => {
+  if (formValues.productType === "variable" && variationData.length > 0) {
+    setFormValues(prev => ({
+      ...prev,
+      stockQty: variationData.reduce((sum, v) => sum + Number(v.stock || 0), 0)
+    }));
+  }
+}, [variationData]);
 
 	const isEditable =
 		formValues.manageStock === "yes" && formValues.productType === "simple";
@@ -91,13 +103,13 @@ export default function GeneralInfo({
 						className='form-control'
 						value={formValues.isDeliveryCharge || ""}
 						onChange={(e) =>
-							setFormValues({
-								...formValues,
-								isDeliveryCharge: e.target.value,
-								deliveryCharge:
-									e.target.value === "no" ? "" : formValues.deliveryCharge,
-							})
-						}>
+  setFormValues({
+    ...formValues,
+    isDeliveryCharge: e.target.value,
+    deliveryCharge: e.target.value === "no" ? 0 : formValues.deliveryCharge,
+  })
+}
+>
 						<option value=''>Select</option>
 						<option value='yes'>Yes</option>
 						<option value='no'>No</option>
@@ -114,7 +126,7 @@ export default function GeneralInfo({
 							onChange={(e) =>
 								setFormValues({
 									...formValues,
-									deliveryCharge: e.target.value,
+    deliveryCharge: Number(e.target.value),
 								})
 							}
 						/>

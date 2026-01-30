@@ -3,11 +3,8 @@ import React from "react";
 export default function VariationTable({
   attributes = [],
   variations = [],
-  setVariations,
   variationData = [], // [{ sku, productCode, mrp, sell, stock }]
   setVariationData,
-   mainProductSKU,
-  mainProductCode,
   generateVariations,
 }) {
 
@@ -48,7 +45,7 @@ export default function VariationTable({
           </thead>
           <tbody>
             {variations.map((v, idx) => (
-<tr key={`${idx}-${v.join('-')}`}> 
+<tr key={variationData[idx]?.variationSKU || idx}>
                 <td>{v.join(" / ")}</td>
               <td>
   <input
